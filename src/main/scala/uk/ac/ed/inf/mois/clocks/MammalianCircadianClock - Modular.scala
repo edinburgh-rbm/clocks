@@ -23,12 +23,137 @@ import uk.ac.ed.inf.mois.sched.NaiveScheduler
 import spire.implicits._
 import uk.ac.ed.inf.mois.implicits._
 
-class MammalianCircadianClock extends ODE with VarCalc {
+class MammalianCircadianClockGene extends ODE with VarCalc {
+
+  /* Global variables */
 
   val L = Double("c:L") default(0.000339)
   L annotate("description", "Effect of light level on transcription")
 
+  val tmc = Double("c:tmc") default(0.42)
+  tmc annotate("description", "Preparation and nuclear export of all mRNA")
+  tmc annotate("units", "1/h")
+
+  val umR = Double("c:umR") default(0.3)
+  umR annotate("description", "Degradation of CRY1 and CRY2 mRNA")
+  umR annotate("units", "1/h")
+
+
+  /* Probabilities of promoter binding */
+
+  val G = Double("c:G") default(0.884)
+  G annotate("description", "Probability of CRY bound to promoter")
+
+  val GRv = Double("c:GRv") default(0)
+  GRv annotate("description", "Probability of REVERBa bound to promoter")
+
+
+  /* PER1 Gene */
+
+  val MnPo = Double("c:MnPo") default(0.039)
+  MnPo annotate("description", "Nuclear PER1 mRNA")
+  MnPo annotate("units", "nM")
+
+  val McPo = Double("c:McPo") default(0.00264)
+  McPo annotate("description", "Cytoplasmic PER1 mRNA")
+  McPo annotate("units", "nM")
+
+  val trPo = Double("c:trPo") default(807.4)
+  trPo annotate("description", "Transcription of PER1")
+  trPo annotate("units", "1/h")
+
+  val umPo = Double("c:umPo") default(6.21)
+  umPo annotate("description", "Degradation of PER1 mRNA")
+  umPo annotate("units", "1/h")
+
+
+  /* PER2 Gene */
+
+  val MnPt = Double("c:MnPt") default(0.015)
+  MnPt annotate("description", "Nuclear PER2 mRNA")
+  MnPt annotate("units", "nM")
+
+  val McPt = Double("c:McPt") default(0.017)
+  McPt annotate("description", "Cytoplasmic PER2 mRNA")
+  McPt annotate("units", "nM")
+
+  val trPt = Double("c:trPt") default(308.8)
+  trPt annotate("description", "Transcription of PER2")
+  trPt annotate("units", "1/h")
+
+  val umPt = Double("c:umPt") default(0.38)
+  umPt annotate("description", "Degradation of PER2 mRNA")
+  umPt annotate("units", "1/h")
+
+
+  /* CRY1 Gene */
+
+  val MnRo = Double("c:MnRo") default(2.478)
+  MnRo annotate("description", "Nuclear CRY1 mRNA")
+  MnRo annotate("units", "nM")
+
+  val McRo = Double("c:McRo") default(3.486)
+  McRo annotate("description", "Cytoplasmic CRY1 mRNA")
+  McRo annotate("units", "nM")
+
+  val trRo = Double("c:trRo") default(9.03)
+  trRo annotate("description", "Transcription of CRY1")
+  trRo annotate("units", "1/h")
+
+
+  /* CRY2 Gene */
+
+  val MnRt = Double("c:MnRt") default(2.1)
+  MnRt annotate("description", "Nuclear CRY2 mRNA")
+  MnRt annotate("units", "nM")
+
+  val McRt = Double("c:McRt") default(2.96)
+  McRt annotate("description", "Cytoplasmic CRY2 mRNA")
+  McRt annotate("units", "nM")
+
+  val trRt = Double("c:trRt") default(7.66)
+  trRt annotate("description", "Transcription of CRY2")
+  trRt annotate("units", "1/h")
+
+
+  /* REVERBa Gene */
+
+  val MnRv = Double("c:MnRv") default(0.000182)
+  MnRv annotate("description", "Nuclear REVERBa mRNA")
+  MnRv annotate("units", "nM")
+
+  val McRv = Double("c:McRv") default(0.000005)
+  McRv annotate("description", "Cytoplasmic REVERBa mRNA")
+  McRv annotate("units", "nM")
+
+  val trRv = Double("c:trRv") default(0.05)
+  trRv annotate("description", "Transcription of REVERBa")
+  trRv annotate("units", "1/h")
+
+  val umRv = Double("c:umRv") default(15.11)
+  umRv annotate("description", "Degradation of REVERBa mRNA")
+  umRv annotate("units", "1/h")
+
+
+  d(MnRo) := (trRo * (1-G) * ((1-GRv)**3)) - (tmc * MnRo)
+  d(McRo) := (tmc * MnRo) - (umR * McRo)
+  d(MnRt) := (trRt * (1-G)) - (tmc * MnRt)
+  d(McRt) := (tmc * MnRt) - (umR * McRt)
+  d(MnPo) := (trPo * ((1-G)**5) + L) - (tmc * MnPo)
+  d(McPo) := (tmc * MnPo) - (umPo * McPo)
+  d(MnPt) := (trPt * ((1-G)**5) + L) - (tmc * MnPt)
+  d(McPt) := (tmc * MnPt) - (umPt * McPt)
+  d(MnRv) := (trRv * ((1-G)**3)) - (tmc * MnRv)
+  d(McRv) := (tmc * MnRv) - (umRv * McRv)
+
+}
+
+class MammalianCircadianClock extends ODE with VarCalc {
+
   /* Global variables */
+
+  val L = Double("c:L") default(0.000339)
+  L annotate("description", "Effect of light level on transcription")
 
   val tmc = Double("c:tmc") default(0.42)
   tmc annotate("description", "Preparation and nuclear export of all mRNA")
@@ -497,30 +622,21 @@ class MammalianCircadianClock extends ODE with VarCalc {
   PtnppCnRtn annotate("units", "nM")
 
 
-
+  /* Derived quantities */
 
   val C = Double("c:C") default(0)
+  C annotate("description", "Total kinase")
+  C annotate("units", "nM")
+  calc(C) := Ct - (PoC + PtC + PopC + PtpC + PoppC + PtppC + PopCRo + PopCRt + PtpCRo + PtpCRt + PoppCRo + PoppCRt + PtppCRo + PtppCRt + PonpCn + PtnpCn + PonppCn + PtnppCn + PonpCnRon + PonpCnRtn + PtnpCnRon + PtnpCnRtn + PonppCnRon + PonppCnRtn + PtnppCnRon + PtnppCnRtn + Cn)
 
   val Rn = Double("c:Rn") default(0)
-
-
-
-  calc(C) := Ct - (PoC + PtC + PopC + PtpC + PoppC + PtppC + PopCRo + PopCRt + PtpCRo + PtpCRt + PoppCRo + PoppCRt + PtppCRo + PtppCRt + PonpCn + PtnpCn + PonppCn + PtnppCn + PonpCnRon + PonpCnRtn + PtnpCnRon + PtnpCnRtn + PonppCnRon + PonppCnRtn + PtnppCnRon + PtnppCnRtn + Cn)
+  Rn annotate("description", "Total nuclear CRY")
   calc(Rn) := Ron + PonpRon + PonppRon + PonpCnRon + PonppCnRon + PtnpRon + PtnppRon + PtnpCnRon + PtnppCnRon + Rtn + PonpRtn + PonppRtn + PonpCnRtn + PonppCnRtn + PtnpRtn + PtnppRtn + PtnpCnRtn + PtnppCnRtn
+
+
 
   d(G) := (bin * Rn * (1-G)) - (unbin * G)
   d(GRv) := (binRv * RvnRvn * (1-GRv)) - (unbinRv * GRv)
-
-  d(MnRo) := (trRo * (1-G) * (1-GRv)**3) - (tmc * MnRo)
-  d(McRo) := (tmc * MnRo) - (umR * McRo)
-  d(MnRt) := (trRt * (1-G)) - (tmc * MnRt)
-  d(McRt) := (tmc * MnRt) - (umR * McRt)
-  d(MnPo) := (trPo * (1-G)**5 + L) - (tmc * MnPo)
-  d(McPo) := (tmc * MnPo) - (umPo * McPo)
-  d(MnPt) := (trPt * (1-G)**5 + L) - (tmc * MnPt)
-  d(McPt) := (tmc * MnPt) - (umPt * McPt)
-  d(MnRv) := (trRv * (1-G)**3) - (tmc * MnRv)
-  d(McRv) := (tmc * MnRv) - (umRv * McRv)
 
   d(Rv) := (tlrv * McRv) - (2 * arv * Rv * Rv) + (2 * drv * RvRv) - (nl * Rv) + (ne * Rvn) - (uRv * Rv)
   d(Rvn) := - (2 * Nf * arv * Rvn * Rvn) + (2 * drv * RvnRvn) + (nl * Rv) - (ne * Rvn) - (uRv * Rvn)
@@ -610,7 +726,7 @@ class Light extends Process {
   */
 
   override def step(t: Double, tau: Double) {
-    if (t.floor % 2 == 0) {
+    if (((t + tau)/12).floor % 2 == 0) {
       L := 0.000339
     } else {
       L := 0
@@ -625,6 +741,7 @@ class MammalianCircadianClockModel extends Model {
     scheduler = new NaiveScheduler(0.01)
   }
   process += new MammalianCircadianClock()
+  process += new MammalianCircadianClockGene()
   process += new Light()
 
 }

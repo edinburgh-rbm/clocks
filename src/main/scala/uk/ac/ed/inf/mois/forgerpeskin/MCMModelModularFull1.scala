@@ -15,20 +15,23 @@
   *  You should have received a copy of the GNU General Public License
   *  along with this program. If not, see <http://www.gnu.org/licenses/>.
   */
-name := "clocks-models"
 
-organization := "uk.ac.ed.inf"
+package uk.ac.ed.inf.mois.forgerpeskin
 
-version := "1.99.10-SNAPSHOT"
+import uk.ac.ed.inf.mois.{Model, ODE, Process, ProcessGroup, VarCalc, Math}
+import uk.ac.ed.inf.mois.sched.NaiveScheduler
+import spire.implicits._
+import uk.ac.ed.inf.mois.implicits._
 
-scalaVersion := "2.11.2"
 
-mainClass in Compile := Some("uk.ac.ed.inf.mois.MoisMain")
+class MCMModelModularFull1 extends Model {
 
-resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
+  val process = new ProcessGroup {
+    scheduler = new NaiveScheduler(0.01)
+  }
+  process += new MCMPrimary()
+  process += new MCMSecondary()
+  process += new MCMGenes()
+  process += new MCMLight()
 
-resolvers += "ucar-unidata-releases" at "https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/"
-
-libraryDependencies += "uk.ac.ed.inf" %% "mois" % "1.99.10-SNAPSHOT"
-
-libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.0" % "test"
+}

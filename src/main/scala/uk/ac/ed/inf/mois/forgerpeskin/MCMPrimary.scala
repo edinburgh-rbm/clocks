@@ -16,23 +16,17 @@
   *  along with this program. If not, see <http://www.gnu.org/licenses/>.
   */
 
-package uk.ac.ed.inf.mois.clocks
+package uk.ac.ed.inf.mois.forgerpeskin
 
 import uk.ac.ed.inf.mois.{Model, ODE, Process, ProcessGroup, VarCalc, Math}
 import uk.ac.ed.inf.mois.sched.NaiveScheduler
 import spire.implicits._
 import uk.ac.ed.inf.mois.implicits._
 
-class MammalianCircadianClock extends ODE with VarCalc {
 
-  val L = Double("c:L") default(0.000339)
-  L annotate("description", "Effect of light level on transcription")
+class MCMPrimary extends ODE with VarCalc {
 
   /* Global variables */
-
-  val tmc = Double("c:tmc") default(0.42)
-  tmc annotate("description", "Preparation and nuclear export of all mRNA")
-  tmc annotate("units", "1/h")
 
   val umR = Double("c:umR") default(0.3)
   umR annotate("description", "Degradation of CRY1 and CRY2 mRNA")
@@ -55,36 +49,11 @@ class MammalianCircadianClock extends ODE with VarCalc {
   nl annotate("units", "1/h")
 
   val ne = Double("c:ne") default(0.71)
-  ne annotate("description", "Nuclear export of PER and boun proteins")
+  ne annotate("description", "Nuclear export of PER and bound proteins")
   ne annotate("units", "1/h")
 
   val Nf = Double("c:Nf") default(115.76)
   Nf annotate("description", "Ratio of nuclear to cytoplasmic compartment volume")
-
-
-  /* Probabilities of promoter binding */
-
-  val G = Double("c:G") default(0.884)
-  G annotate("description", "Probability of CRY bound to promoter")
-
-  val GRv = Double("c:GRv") default(0)
-  GRv annotate("description", "Probability of REVERBa bound to promoter")
-
-  val bin = Double("c:bin") default(1476.52)
-  bin annotate("description", "Binding of CRY to promoter in nucleus")
-  bin annotate("units", "1/nM 1/h")
-
-  val unbin = Double("c:unbin") default(23.78)
-  unbin annotate("description", "Unbinding of CRY from promoter in nucleus")
-  unbin annotate("units", "1/h")
-
-  val binRv = Double("c:binRv") default(0.13)
-  binRv annotate("description", "Normalised binding of REVERBa to promoter in nucleus")
-  binRv annotate("units", "1/nM 1/h")
-
-  val unbinRv = Double("c:unbinRv") default(21.76)
-  unbinRv annotate("description", "Normalised unbinding of REVERBa from promoter in nucleus")
-  unbinRv annotate("units", "1/h")
 
 
   /* Kinase */
@@ -124,40 +93,16 @@ class MammalianCircadianClock extends ODE with VarCalc {
 
   /* PER1 Gene */
 
-  val MnPo = Double("c:MnPo") default(0.039)
-  MnPo annotate("description", "Nuclear PER1 mRNA")
-  MnPo annotate("units", "nM")
-
   val McPo = Double("c:McPo") default(0.00264)
   McPo annotate("description", "Cytoplasmic PER1 mRNA")
   McPo annotate("units", "nM")
 
-  val trPo = Double("c:trPo") default(807.4)
-  trPo annotate("description", "Transcription of PER1")
-  trPo annotate("units", "1/h")
-
-  val umPo = Double("c:umPo") default(6.21)
-  umPo annotate("description", "Degradation of PER1 mRNA")
-  umPo annotate("units", "1/h")
-
 
   /* PER2 Gene */
-
-  val MnPt = Double("c:MnPt") default(0.015)
-  MnPt annotate("description", "Nuclear PER2 mRNA")
-  MnPt annotate("units", "nM")
 
   val McPt = Double("c:McPt") default(0.017)
   McPt annotate("description", "Cytoplasmic PER2 mRNA")
   McPt annotate("units", "nM")
-
-  val trPt = Double("c:trPt") default(308.8)
-  trPt annotate("description", "Transcription of PER2")
-  trPt annotate("units", "1/h")
-
-  val umPt = Double("c:umPt") default(0.38)
-  umPt annotate("description", "Degradation of PER2 mRNA")
-  umPt annotate("units", "1/h")
 
 
   /* PER Proteins */
@@ -253,32 +198,16 @@ class MammalianCircadianClock extends ODE with VarCalc {
 
   /* CRY1 Gene */
 
-  val MnRo = Double("c:MnRo") default(2.478)
-  MnRo annotate("description", "Nuclear CRY1 mRNA")
-  MnRo annotate("units", "nM")
-
   val McRo = Double("c:McRo") default(3.486)
   McRo annotate("description", "Cytoplasmic CRY1 mRNA")
   McRo annotate("units", "nM")
 
-  val trRo = Double("c:trRo") default(9.03)
-  trRo annotate("description", "Transcription of CRY1")
-  trRo annotate("units", "1/h")
-
 
   /* CRY2 Gene */
-
-  val MnRt = Double("c:MnRt") default(2.1)
-  MnRt annotate("description", "Nuclear CRY2 mRNA")
-  MnRt annotate("units", "nM")
 
   val McRt = Double("c:McRt") default(2.96)
   McRt annotate("description", "Cytoplasmic CRY2 mRNA")
   McRt annotate("units", "nM")
-
-  val trRt = Double("c:trRt") default(7.66)
-  trRt annotate("description", "Transcription of CRY2")
-  trRt annotate("units", "1/h")
 
 
   /* CRY Proteins */
@@ -310,60 +239,6 @@ class MammalianCircadianClock extends ODE with VarCalc {
   val urt = Double("c:urt") default(0.59)
   urt annotate("description", "Degradation of CRY2 unbound to PER")
   urt annotate("units", "1/h")
-
-
-  /* REVERBa Gene */
-
-  val MnRv = Double("c:MnRv") default(0.000182)
-  MnRv annotate("description", "Nuclear REVERBa mRNA")
-  MnRv annotate("units", "nM")
-
-  val McRv = Double("c:McRv") default(0.000005)
-  McRv annotate("description", "Cytoplasmic REVERBa mRNA")
-  McRv annotate("units", "nM")
-
-  val trRv = Double("c:trRv") default(0.05)
-  trRv annotate("description", "Transcription of REVERBa")
-  trRv annotate("units", "1/h")
-
-  val umRv = Double("c:umRv") default(15.11)
-  umRv annotate("description", "Degradation of REVERBa mRNA")
-  umRv annotate("units", "1/h")
-
-
-  /* REVERBa Protein */
-
-  val Rv = Double("c:Rv") default(0.000001)
-  Rv annotate("description", "Cytoplasmic REVERBa")
-  Rv annotate("units", "nM")
-
-  val Rvn = Double("c:Rvn") default(0)
-  Rvn annotate("description", "Nuclear REVERBa")
-  Rvn annotate("units", "nM")
-
-  val RvRv = Double("c:RvRv") default(0)
-  RvRv annotate("description", "Cytoplasmic REVERBa dimer")
-  RvRv annotate("units", "nM")
-
-  val RvnRvn = Double("c:RvnRvn") default(0)
-  RvnRvn annotate("description", "Nuclear REVERBa dimer")
-  RvnRvn annotate("units", "nM")
-
-  val tlrv = Double("c:tlrv") default(2.53)
-  tlrv annotate("description", "Translation of REVERBa")
-  tlrv annotate("units", "1/h")
-
-  val arv = Double("c:arv") default(0.21)
-  arv annotate("description", "Dimerisation of REVERBa")
-  arv annotate("units", "1/nM 1/h")
-
-  val drv = Double("c:drv") default(3.62)
-  drv annotate("description", "Undimerisation of REVERBa")
-  drv annotate("units", "1/h")
-
-  val uRv = Double("c:uRv") default(16.25)
-  uRv annotate("description", "Degradation of REVERBa")
-  uRv annotate("units", "1/h")
 
 
   /* PER-CRY Complexes */
@@ -497,35 +372,13 @@ class MammalianCircadianClock extends ODE with VarCalc {
   PtnppCnRtn annotate("units", "nM")
 
 
-
+  /* Derived quantities */
 
   val C = Double("c:C") default(0)
-
-  val Rn = Double("c:Rn") default(0)
-
-
-
+  C annotate("description", "Total unbound cytoplasmic kinase")
+  C annotate("units", "nM")
   calc(C) := Ct - (PoC + PtC + PopC + PtpC + PoppC + PtppC + PopCRo + PopCRt + PtpCRo + PtpCRt + PoppCRo + PoppCRt + PtppCRo + PtppCRt + PonpCn + PtnpCn + PonppCn + PtnppCn + PonpCnRon + PonpCnRtn + PtnpCnRon + PtnpCnRtn + PonppCnRon + PonppCnRtn + PtnppCnRon + PtnppCnRtn + Cn)
-  calc(Rn) := Ron + PonpRon + PonppRon + PonpCnRon + PonppCnRon + PtnpRon + PtnppRon + PtnpCnRon + PtnppCnRon + Rtn + PonpRtn + PonppRtn + PonpCnRtn + PonppCnRtn + PtnpRtn + PtnppRtn + PtnpCnRtn + PtnppCnRtn
 
-  d(G) := (bin * Rn * (1-G)) - (unbin * G)
-  d(GRv) := (binRv * RvnRvn * (1-GRv)) - (unbinRv * GRv)
-
-  d(MnRo) := (trRo * (1-G) * ((1-GRv)**3)) - (tmc * MnRo)
-  d(McRo) := (tmc * MnRo) - (umR * McRo)
-  d(MnRt) := (trRt * (1-G)) - (tmc * MnRt)
-  d(McRt) := (tmc * MnRt) - (umR * McRt)
-  d(MnPo) := (trPo * ((1-G)**5) + L) - (tmc * MnPo)
-  d(McPo) := (tmc * MnPo) - (umPo * McPo)
-  d(MnPt) := (trPt * ((1-G)**5) + L) - (tmc * MnPt)
-  d(McPt) := (tmc * MnPt) - (umPt * McPt)
-  d(MnRv) := (trRv * ((1-G)**3)) - (tmc * MnRv)
-  d(McRv) := (tmc * MnRv) - (umRv * McRv)
-
-  d(Rv) := (tlrv * McRv) - (2 * arv * Rv * Rv) + (2 * drv * RvRv) - (nl * Rv) + (ne * Rvn) - (uRv * Rv)
-  d(Rvn) := - (2 * Nf * arv * Rvn * Rvn) + (2 * drv * RvnRvn) + (nl * Rv) - (ne * Rvn) - (uRv * Rvn)
-  d(RvRv) := (arv * Rv * Rv) - (drv * RvRv) - (nl * RvRv) + (ne * RvnRvn) - (2 * uRv * RvRv)
-  d(RvnRvn) := (Nf * arv * Rvn * Rvn) - (drv * RvnRvn) + (nl * RvRv) - (ne * RvnRvn) - (2 * uRv * RvnRvn)
 
   d(Po) := (tlp * McPo) - (ac * Po * C) + (dc * PoC) - (upu * Po)
   d(Pt) := (tlp * McPt) - (ac * Pt * C) + (dc * PtC) - (upu * Pt)
@@ -588,43 +441,5 @@ class MammalianCircadianClock extends ODE with VarCalc {
   d(Rtn) := - (ar * Nf * Rtn * Ponp) - (ar * Nf * Rtn * Ponpp) - (ar * Nf * Rtn * PonpCn) - (ar * Nf * Rtn * PonppCn) + (dr * PonpRtn) + (dr * PonppRtn) + (dr * PonpCnRtn) + (dr * PonppCnRtn) - (ar * Nf * Rtn * Ptnp) - (dr * Nf * Rtn * Ptnpp) - (ar * Nf * Rtn * PtnpCn) - (ar * Nf * Rtn * PtnppCn) + (dr * PtnpRtn) + (dr * PtnppRtn) + (dr * PtnpCnRtn) + (dr * PtnppCnRtn) - (urt * Rtn)
 
   d(Cn) := - (ac * Nf * Cn * Ponp) - (ac * Nf * Cn * Ponpp) - (ac * Nf * Cn * PonpRon) - (ac * Nf * Cn * PonppRon) + (dc * PonpCn) + (dc * PonppCn) + (dc * PonpCnRon) + (dc * PonppCnRon) - (ac * Nf * Cn * Ptnp) - (ac * Nf * Cn * Ptnpp) - (ac * Nf * Cn * PtnpRon) - (ac * Nf * Cn * PtnppRon) + (dc * PtnpCn) + (dc * PtnppCn) + (dc * PtnpCnRon) + (dc * PtnppCnRon) - (ac * Nf * Cn * PonpRtn) - (ac * Nf * Cn * PonppRtn) + (dc * PonpCnRtn) + (dc * PonppCnRtn) - (ac * Nf * Cn * PtnpRtn) - (ac * Nf * Cn * PtnppRtn) + (dc * PtnpCnRtn) + (dc * PtnppCnRtn) + (up * PonpCn) + (up * PonppCn) + (up * PtnpCn) + (up * PtnppCn)
-
-}
-
-
-class Light extends Process {
-
-  val L = Double("c:L")
-  L annotate("description", "Effect of light level on transcription")
-
- /*
-  * val Lon = Double("c:Lon") default(0.000339)
-  * Lon annotate("description", "Light level (light on)")
-  *
-  * val Loff = Double("c:Loff") default(0)
-  * Loff annotate("description", "Light level (light off)")
-  *
-  * If Math.floor([T]/12) is odd, use Loff as input to MammalianCircadianClock.
-  * Else, use Lon.
-  *
-  */
-
-  override def step(t: Double, tau: Double) {
-    if (((t + tau)/12).floor % 2 == 0) {
-      L := 0.000339
-    } else {
-      L := 0
-    }
-  }
-}
-
-
-class MammalianCircadianClockModel extends Model {
-
-  val process = new ProcessGroup {
-    scheduler = new NaiveScheduler(0.01)
-  }
-  process += new MammalianCircadianClock()
-  process += new Light()
 
 }

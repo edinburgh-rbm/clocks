@@ -32,35 +32,35 @@ class MCMMonolithic extends ODE with VarCalc {
   val L = Double("c:L") default(0.000339)
   L annotate("description", "Effect of light level on transcription")
 
-  val tmc = Double("c:tmc") default(0.42)
+  val tmc = Double("c:tmc") default(0.42) param()
   tmc annotate("description", "Preparation and nuclear export of all mRNA")
   tmc annotate("units", "1/h")
 
-  val umR = Double("c:umR") default(0.3)
+  val umR = Double("c:umR") default(0.3) param()
   umR annotate("description", "Degradation of CRY1 and CRY2 mRNA")
   umR annotate("units", "1/h")
 
-  val up = Double("c:up") default(3.39)
+  val up = Double("c:up") default(3.39) param()
   up annotate("description", "Degradation of PERp unbound to CRY")
   up annotate("units", "1/h")
 
-  val ar = Double("c:ar") default(0.27)
+  val ar = Double("c:ar") default(0.27) param()
   ar annotate("description", "Binding of PER1 and PER2 to CRY1 and CRY2")
   ar annotate("units", "1/nM 1/h")
 
-  val dr = Double("c:dr") default(0.35)
+  val dr = Double("c:dr") default(0.35) param()
   dr annotate("description", "Unbinding of PER1 and PER2 from CRY1 and CRY2")
   dr annotate("units", "1/h")
 
-  val nl = Double("c:nl") default(2.31)
+  val nl = Double("c:nl") default(2.31) param()
   nl annotate("description", "Nuclear localisation of PERp and bound proteins")
   nl annotate("units", "1/h")
 
-  val ne = Double("c:ne") default(0.71)
+  val ne = Double("c:ne") default(0.71) param()
   ne annotate("description", "Nuclear export of PER and bound proteins")
   ne annotate("units", "1/h")
 
-  val Nf = Double("c:Nf") default(115.76)
+  val Nf = Double("c:Nf") default(115.76) param()
   Nf annotate("description", "Ratio of nuclear to cytoplasmic compartment volume")
 
 
@@ -72,19 +72,19 @@ class MCMMonolithic extends ODE with VarCalc {
   val GRv = Double("c:GRv") default(0)
   GRv annotate("description", "Probability of REVERBa bound to promoter")
 
-  val bin = Double("c:bin") default(1476.52)
+  val bin = Double("c:bin") default(1476.52) param()
   bin annotate("description", "Binding of CRY to promoter in nucleus")
   bin annotate("units", "1/nM 1/h")
 
-  val unbin = Double("c:unbin") default(23.78)
+  val unbin = Double("c:unbin") default(23.78) param()
   unbin annotate("description", "Unbinding of CRY from promoter in nucleus")
   unbin annotate("units", "1/h")
 
-  val binRv = Double("c:binRv") default(0.13)
+  val binRv = Double("c:binRv") default(0.13) param()
   binRv annotate("description", "Normalised binding of REVERBa to promoter in nucleus")
   binRv annotate("units", "1/nM 1/h")
 
-  val unbinRv = Double("c:unbinRv") default(21.76)
+  val unbinRv = Double("c:unbinRv") default(21.76) param()
   unbinRv annotate("description", "Normalised unbinding of REVERBa from promoter in nucleus")
   unbinRv annotate("units", "1/h")
 
@@ -99,27 +99,27 @@ class MCMMonolithic extends ODE with VarCalc {
   Ct annotate("description", "Total kinase concentration")
   Ct annotate("units", "nM")
 
-  val ac = Double("c:ac") default(0.47)
+  val ac = Double("c:ac") default(0.47) param()
   ac annotate("description", "Binding of PER1 and PER2 to kinases")
   ac annotate("units", "1/nM 1/h")
 
-  val dc = Double("c:dc") default(5.09)
+  val dc = Double("c:dc") default(5.09) param()
   dc annotate("description", "Unbinding of PER1 and PER2 from kinases")
   dc annotate("units", "1/h")
 
-  val hoo = Double("c:hoo") default(0.29)
+  val hoo = Double("c:hoo") default(0.29) param()
   hoo annotate("description", "Initial phosphorylation of PER1")
   hoo annotate("units", "1/h")
 
-  val hot = Double("c:hot") default(0.09)
+  val hot = Double("c:hot") default(0.09) param()
   hot annotate("description", "Initial phosphorylation of PER2")
   hot annotate("units", "1/h")
 
-  val hto = Double("c:hto") default(1.45)
+  val hto = Double("c:hto") default(1.45) param()
   hto annotate("description", "Phosphorylation preventing nuclear localisation of PER1")
   hto annotate("units", "1/h")
 
-  val htt = Double("c:htt") default(0)
+  val htt = Double("c:htt") default(0) param()
   htt annotate("description", "Phosphorylation preventing nuclear localisation of PER2")
   htt annotate("units", "1/h")
 
@@ -134,11 +134,11 @@ class MCMMonolithic extends ODE with VarCalc {
   McPo annotate("description", "Cytoplasmic PER1 mRNA")
   McPo annotate("units", "nM")
 
-  val trPo = Double("c:trPo") default(807.4)
+  val trPo = Double("c:trPo") default(807.4) param()
   trPo annotate("description", "Transcription of PER1")
   trPo annotate("units", "1/h")
 
-  val umPo = Double("c:umPo") default(6.21)
+  val umPo = Double("c:umPo") default(6.21) param()
   umPo annotate("description", "Degradation of PER1 mRNA")
   umPo annotate("units", "1/h")
 
@@ -153,11 +153,11 @@ class MCMMonolithic extends ODE with VarCalc {
   McPt annotate("description", "Cytoplasmic PER2 mRNA")
   McPt annotate("units", "nM")
 
-  val trPt = Double("c:trPt") default(308.8)
+  val trPt = Double("c:trPt") default(308.8) param()
   trPt annotate("description", "Transcription of PER2")
   trPt annotate("units", "1/h")
 
-  val umPt = Double("c:umPt") default(0.38)
+  val umPt = Double("c:umPt") default(0.38) param()
   umPt annotate("description", "Degradation of PER2 mRNA")
   umPt annotate("units", "1/h")
 
@@ -180,11 +180,11 @@ class MCMMonolithic extends ODE with VarCalc {
   PtC annotate("description", "Cytoplasmic kinase-bound PER2")
   PtC annotate("units", "nM")
 
-  val tlp = Double("c:tlp") default(10)
+  val tlp = Double("c:tlp") default(10) param()
   tlp annotate("description", "Translation of PER1 and PER2")
   tlp annotate("units", "1/h")
 
-  val upu = Double("c:upu") default(0.08)
+  val upu = Double("c:upu") default(0.08) param()
   upu annotate("description", "Degradation of unphosphorylated PER")
   upu annotate("units", "1/h")
 
@@ -263,7 +263,7 @@ class MCMMonolithic extends ODE with VarCalc {
   McRo annotate("description", "Cytoplasmic CRY1 mRNA")
   McRo annotate("units", "nM")
 
-  val trRo = Double("c:trRo") default(9.03)
+  val trRo = Double("c:trRo") default(9.03) param()
   trRo annotate("description", "Transcription of CRY1")
   trRo annotate("units", "1/h")
 
@@ -278,7 +278,7 @@ class MCMMonolithic extends ODE with VarCalc {
   McRt annotate("description", "Cytoplasmic CRY2 mRNA")
   McRt annotate("units", "nM")
 
-  val trRt = Double("c:trRt") default(7.66)
+  val trRt = Double("c:trRt") default(7.66) param()
   trRt annotate("description", "Transcription of CRY2")
   trRt annotate("units", "1/h")
 
@@ -301,15 +301,15 @@ class MCMMonolithic extends ODE with VarCalc {
   Rtn annotate("description", "Nuclear CRY2")
   Rtn annotate("units", "nM")
 
-  val tlr = Double("c:tlr") default(1.031)
+  val tlr = Double("c:tlr") default(1.031) param()
   tlr annotate("description", "Translation of CRY1 and CRY2")
   tlr annotate("units", "1/h")
 
-  val uro = Double("c:uro") default(0.44)
+  val uro = Double("c:uro") default(0.44) param()
   uro annotate("description", "Degradation of CRY1 unbound to PER")
   uro annotate("units", "1/h")
 
-  val urt = Double("c:urt") default(0.59)
+  val urt = Double("c:urt") default(0.59) param()
   urt annotate("description", "Degradation of CRY2 unbound to PER")
   urt annotate("units", "1/h")
 
@@ -324,11 +324,11 @@ class MCMMonolithic extends ODE with VarCalc {
   McRv annotate("description", "Cytoplasmic REVERBa mRNA")
   McRv annotate("units", "nM")
 
-  val trRv = Double("c:trRv") default(0.05)
+  val trRv = Double("c:trRv") default(0.05) param()
   trRv annotate("description", "Transcription of REVERBa")
   trRv annotate("units", "1/h")
 
-  val umRv = Double("c:umRv") default(15.11)
+  val umRv = Double("c:umRv") default(15.11) param()
   umRv annotate("description", "Degradation of REVERBa mRNA")
   umRv annotate("units", "1/h")
 
@@ -351,19 +351,19 @@ class MCMMonolithic extends ODE with VarCalc {
   RvnRvn annotate("description", "Nuclear REVERBa dimer")
   RvnRvn annotate("units", "nM")
 
-  val tlrv = Double("c:tlrv") default(2.53)
+  val tlrv = Double("c:tlrv") default(2.53) param()
   tlrv annotate("description", "Translation of REVERBa")
   tlrv annotate("units", "1/h")
 
-  val arv = Double("c:arv") default(0.21)
+  val arv = Double("c:arv") default(0.21) param()
   arv annotate("description", "Dimerisation of REVERBa")
   arv annotate("units", "1/nM 1/h")
 
-  val drv = Double("c:drv") default(3.62)
+  val drv = Double("c:drv") default(3.62) param()
   drv annotate("description", "Undimerisation of REVERBa")
   drv annotate("units", "1/h")
 
-  val uRv = Double("c:uRv") default(16.25)
+  val uRv = Double("c:uRv") default(16.25) param()
   uRv annotate("description", "Degradation of REVERBa")
   uRv annotate("units", "1/h")
 

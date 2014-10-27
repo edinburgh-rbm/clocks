@@ -18,8 +18,9 @@
 
 package uk.ac.ed.inf.mois.forgerpeskin
 
-import uk.ac.ed.inf.mois.{Model, DeterministicReactionNetwork, Process, ProcessGroup, VarCalc, Math}
+import uk.ac.ed.inf.mois.{Model, ODE, Process, ProcessGroup, VarCalc, Math}
 import uk.ac.ed.inf.mois.sched.NaiveScheduler
+import uk.ac.ed.inf.mois.reaction.DeterministicReactionNetwork
 import spire.implicits._
 import uk.ac.ed.inf.mois.implicits._
 
@@ -375,10 +376,10 @@ class MCMPrimaryDPN extends DeterministicReactionNetwork with VarCalc {
   /* Derived quantities */
 
   val C = Species("c:C") default(0)
-  C annotate("description", "Total unbound cytoplasmic kinase")
-  C annotate("units", "nM")
-  calc(C) := Ct - (PoC + PtC + PopC + PtpC + PoppC + PtppC + PopCRo + PopCRt + PtpCRo + PtpCRt + PoppCRo + PoppCRt + PtppCRo + PtppCRt + PonpCn + PtnpCn + PonppCn + PtnppCn + PonpCnRon + PonpCnRtn + PtnpCnRon + PtnpCnRtn + PonppCnRon + PonppCnRtn + PtnppCnRon + PtnppCnRtn + Cn)
-
+  /*C annotate("description", "Total unbound cytoplasmic kinase")
+   *C annotate("units", "nM")
+   *calc(C) := Ct - (PoC + PtC + PopC + PtpC + PoppC + PtppC + PopCRo + PopCRt + PtpCRo + PtpCRt + PoppCRo + PoppCRt + PtppCRo + PtppCRt + PonpCn + PtnpCn + PonppCn + PtnppCn + PonpCnRon + PonpCnRtn + PtnpCnRon + PtnpCnRtn + PonppCnRon + PonppCnRtn + PtnppCnRon + PtnppCnRtn + Cn)
+   */
 
   reactions(
 
@@ -587,5 +588,17 @@ class MCMPrimaryDPN extends DeterministicReactionNetwork with VarCalc {
     PtnppCn --> Cn at up
 
   )
+
+}
+
+
+class MCCCalc extends VarCalc{
+
+  /* Derived quantities */
+
+  val C = Species("c:C") default(0)
+  C annotate("description", "Total unbound cytoplasmic kinase")
+  C annotate("units", "nM")
+  calc(C) := Ct - (PoC + PtC + PopC + PtpC + PoppC + PtppC + PopCRo + PopCRt + PtpCRo + PtpCRt + PoppCRo + PoppCRt + PtppCRo + PtppCRt + PonpCn + PtnpCn + PonppCn + PtnppCn + PonpCnRon + PonpCnRtn + PtnpCnRon + PtnpCnRtn + PonppCnRon + PonppCnRtn + PtnppCnRon + PtnppCnRtn + Cn)
 
 }

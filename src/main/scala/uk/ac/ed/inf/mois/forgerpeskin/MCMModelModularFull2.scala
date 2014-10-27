@@ -29,7 +29,7 @@ class MCMModelModularFull2 extends Model {
   val process = new ProcessGroup {
     scheduler = new NaiveScheduler(0.01)
   }
-  process += new MCMPrimaryDPN()
+  process += new MCMPrimary()
   process += new MCMSecondary()
   process += new MCMGenes()
   process += new MCMLight()

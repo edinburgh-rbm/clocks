@@ -30,11 +30,11 @@ class MCMGenes extends ODE with VarCalc {
   val L = Double("c:L") default(0.000339)
   L annotate("description", "Effect of light level on transcription")
 
-  val tmc = Double("c:tmc") default(0.42)
+  val tmc = Double("c:tmc") default(0.42) param()
   tmc annotate("description", "Preparation and nuclear export of all mRNA")
   tmc annotate("units", "1/h")
 
-  val umR = Double("c:umR") default(0.3)
+  val umR = Double("c:umR") default(0.3) param()
   umR annotate("description", "Degradation of CRY1 and CRY2 mRNA")
   umR annotate("units", "1/h")
 
@@ -47,19 +47,19 @@ class MCMGenes extends ODE with VarCalc {
   val GRv = Double("c:GRv") default(0)
   GRv annotate("description", "Probability of REVERBa bound to promoter")
 
-  val bin = Double("c:bin") default(1476.52)
+  val bin = Double("c:bin") default(1476.52) param()
   bin annotate("description", "Binding of CRY to promoter in nucleus")
   bin annotate("units", "1/nM 1/h")
 
-  val unbin = Double("c:unbin") default(23.78)
+  val unbin = Double("c:unbin") default(23.78) param()
   unbin annotate("description", "Unbinding of CRY from promoter in nucleus")
   unbin annotate("units", "1/h")
 
-  val binRv = Double("c:binRv") default(0.13)
+  val binRv = Double("c:binRv") default(0.13) param()
   binRv annotate("description", "Normalised binding of REVERBa to promoter in nucleus")
   binRv annotate("units", "1/nM 1/h")
 
-  val unbinRv = Double("c:unbinRv") default(21.76)
+  val unbinRv = Double("c:unbinRv") default(21.76) param()
   unbinRv annotate("description", "Normalised unbinding of REVERBa from promoter in nucleus")
   unbinRv annotate("units", "1/h")
 
@@ -74,11 +74,11 @@ class MCMGenes extends ODE with VarCalc {
   McPo annotate("description", "Cytoplasmic PER1 mRNA")
   McPo annotate("units", "nM")
 
-  val trPo = Double("c:trPo") default(807.4)
+  val trPo = Double("c:trPo") default(807.4) param()
   trPo annotate("description", "Transcription of PER1")
   trPo annotate("units", "1/h")
 
-  val umPo = Double("c:umPo") default(6.21)
+  val umPo = Double("c:umPo") default(6.21) param()
   umPo annotate("description", "Degradation of PER1 mRNA")
   umPo annotate("units", "1/h")
 
@@ -93,11 +93,11 @@ class MCMGenes extends ODE with VarCalc {
   McPt annotate("description", "Cytoplasmic PER2 mRNA")
   McPt annotate("units", "nM")
 
-  val trPt = Double("c:trPt") default(308.8)
+  val trPt = Double("c:trPt") default(308.8) param()
   trPt annotate("description", "Transcription of PER2")
   trPt annotate("units", "1/h")
 
-  val umPt = Double("c:umPt") default(0.38)
+  val umPt = Double("c:umPt") default(0.38) param()
   umPt annotate("description", "Degradation of PER2 mRNA")
   umPt annotate("units", "1/h")
 
@@ -112,7 +112,7 @@ class MCMGenes extends ODE with VarCalc {
   McRo annotate("description", "Cytoplasmic CRY1 mRNA")
   McRo annotate("units", "nM")
 
-  val trRo = Double("c:trRo") default(9.03)
+  val trRo = Double("c:trRo") default(9.03) param()
   trRo annotate("description", "Transcription of CRY1")
   trRo annotate("units", "1/h")
 
@@ -127,7 +127,7 @@ class MCMGenes extends ODE with VarCalc {
   McRt annotate("description", "Cytoplasmic CRY2 mRNA")
   McRt annotate("units", "nM")
 
-  val trRt = Double("c:trRt") default(7.66)
+  val trRt = Double("c:trRt") default(7.66) param()
   trRt annotate("description", "Transcription of CRY2")
   trRt annotate("units", "1/h")
 
@@ -153,11 +153,11 @@ class MCMGenes extends ODE with VarCalc {
   McRv annotate("description", "Cytoplasmic REVERBa mRNA")
   McRv annotate("units", "nM")
 
-  val trRv = Double("c:trRv") default(0.05)
+  val trRv = Double("c:trRv") default(0.05) param()
   trRv annotate("description", "Transcription of REVERBa")
   trRv annotate("units", "1/h")
 
-  val umRv = Double("c:umRv") default(15.11)
+  val umRv = Double("c:umRv") default(15.11) param()
   umRv annotate("description", "Degradation of REVERBa mRNA")
   umRv annotate("units", "1/h")
 

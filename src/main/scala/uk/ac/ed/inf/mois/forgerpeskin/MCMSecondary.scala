@@ -28,15 +28,15 @@ class MCMSecondary extends ODE with VarCalc {
 
   /* Global variables */
 
-  val nl = Double("c:nl") default(2.31)
+  val nl = Double("c:nl") default(2.31) param()
   nl annotate("description", "Nuclear localisation of PERp and bound proteins")
   nl annotate("units", "1/h")
 
-  val ne = Double("c:ne") default(0.71)
+  val ne = Double("c:ne") default(0.71) param()
   ne annotate("description", "Nuclear export of PER and boun proteins")
   ne annotate("units", "1/h")
 
-  val Nf = Double("c:Nf") default(115.76)
+  val Nf = Double("c:Nf") default(115.76) param()
   Nf annotate("description", "Ratio of nuclear to cytoplasmic compartment volume")
 
 
@@ -65,19 +65,19 @@ class MCMSecondary extends ODE with VarCalc {
   RvnRvn annotate("description", "Nuclear REVERBa dimer")
   RvnRvn annotate("units", "nM")
 
-  val tlrv = Double("c:tlrv") default(2.53)
+  val tlrv = Double("c:tlrv") default(2.53) param()
   tlrv annotate("description", "Translation of REVERBa")
   tlrv annotate("units", "1/h")
 
-  val arv = Double("c:arv") default(0.21)
+  val arv = Double("c:arv") default(0.21) param()
   arv annotate("description", "Dimerisation of REVERBa")
   arv annotate("units", "1/nM 1/h")
 
-  val drv = Double("c:drv") default(3.62)
+  val drv = Double("c:drv") default(3.62) param()
   drv annotate("description", "Undimerisation of REVERBa")
   drv annotate("units", "1/h")
 
-  val uRv = Double("c:uRv") default(16.25)
+  val uRv = Double("c:uRv") default(16.25) param()
   uRv annotate("description", "Degradation of REVERBa")
   uRv annotate("units", "1/h")
 

@@ -28,31 +28,31 @@ class MCMProteins extends ODE with VarCalc {
 
   /* Global variables */
 
-  val umR = Double("c:umR") default(0.3)
+  val umR = Double("c:umR") default(0.3) param()
   umR annotate("description", "Degradation of CRY1 and CRY2 mRNA")
   umR annotate("units", "1/h")
 
-  val up = Double("c:up") default(3.39)
+  val up = Double("c:up") default(3.39) param()
   up annotate("description", "Degradation of PERp unbound to CRY")
   up annotate("units", "1/h")
 
-  val ar = Double("c:ar") default(0.27)
+  val ar = Double("c:ar") default(0.27) param()
   ar annotate("description", "Binding of PER1 and PER2 to CRY1 and CRY2")
   ar annotate("units", "1/nM 1/h")
 
-  val dr = Double("c:dr") default(0.35)
+  val dr = Double("c:dr") default(0.35) param()
   dr annotate("description", "Unbinding of PER1 and PER2 from CRY1 and CRY2")
   dr annotate("units", "1/h")
 
-  val nl = Double("c:nl") default(2.31)
+  val nl = Double("c:nl") default(2.31) param()
   nl annotate("description", "Nuclear localisation of PERp and bound proteins")
   nl annotate("units", "1/h")
 
-  val ne = Double("c:ne") default(0.71)
+  val ne = Double("c:ne") default(0.71) param()
   ne annotate("description", "Nuclear export of PER and bound proteins")
   ne annotate("units", "1/h")
 
-  val Nf = Double("c:Nf") default(115.76)
+  val Nf = Double("c:Nf") default(115.76) param()
   Nf annotate("description", "Ratio of nuclear to cytoplasmic compartment volume")
 
 
@@ -66,27 +66,27 @@ class MCMProteins extends ODE with VarCalc {
   Ct annotate("description", "Total kinase concentration")
   Ct annotate("units", "nM")
 
-  val ac = Double("c:ac") default(0.47)
+  val ac = Double("c:ac") default(0.47) param()
   ac annotate("description", "Binding of PER1 and PER2 to kinases")
   ac annotate("units", "1/nM 1/h")
 
-  val dc = Double("c:dc") default(5.09)
+  val dc = Double("c:dc") default(5.09) param()
   dc annotate("description", "Unbinding of PER1 and PER2 from kinases")
   dc annotate("units", "1/h")
 
-  val hoo = Double("c:hoo") default(0.29)
+  val hoo = Double("c:hoo") default(0.29) param()
   hoo annotate("description", "Initial phosphorylation of PER1")
   hoo annotate("units", "1/h")
 
-  val hot = Double("c:hot") default(0.09)
+  val hot = Double("c:hot") default(0.09) param()
   hot annotate("description", "Initial phosphorylation of PER2")
   hot annotate("units", "1/h")
 
-  val hto = Double("c:hto") default(1.45)
+  val hto = Double("c:hto") default(1.45) param()
   hto annotate("description", "Phosphorylation preventing nuclear localisation of PER1")
   hto annotate("units", "1/h")
 
-  val htt = Double("c:htt") default(0)
+  val htt = Double("c:htt") default(0) param()
   htt annotate("description", "Phosphorylation preventing nuclear localisation of PER2")
   htt annotate("units", "1/h")
 
@@ -123,11 +123,11 @@ class MCMProteins extends ODE with VarCalc {
   PtC annotate("description", "Cytoplasmic kinase-bound PER2")
   PtC annotate("units", "nM")
 
-  val tlp = Double("c:tlp") default(10)
+  val tlp = Double("c:tlp") default(10) param()
   tlp annotate("description", "Translation of PER1 and PER2")
   tlp annotate("units", "1/h")
 
-  val upu = Double("c:upu") default(0.08)
+  val upu = Double("c:upu") default(0.08) param()
   upu annotate("description", "Degradation of unphosphorylated PER")
   upu annotate("units", "1/h")
 
@@ -228,15 +228,15 @@ class MCMProteins extends ODE with VarCalc {
   Rtn annotate("description", "Nuclear CRY2")
   Rtn annotate("units", "nM")
 
-  val tlr = Double("c:tlr") default(1.031)
+  val tlr = Double("c:tlr") default(1.031) param()
   tlr annotate("description", "Translation of CRY1 and CRY2")
   tlr annotate("units", "1/h")
 
-  val uro = Double("c:uro") default(0.44)
+  val uro = Double("c:uro") default(0.44) param()
   uro annotate("description", "Degradation of CRY1 unbound to PER")
   uro annotate("units", "1/h")
 
-  val urt = Double("c:urt") default(0.59)
+  val urt = Double("c:urt") default(0.59) param()
   urt annotate("description", "Degradation of CRY2 unbound to PER")
   urt annotate("units", "1/h")
 
@@ -266,19 +266,19 @@ class MCMProteins extends ODE with VarCalc {
   RvnRvn annotate("description", "Nuclear REVERBa dimer")
   RvnRvn annotate("units", "nM")
 
-  val tlrv = Double("c:tlrv") default(2.53)
+  val tlrv = Double("c:tlrv") default(2.53) param()
   tlrv annotate("description", "Translation of REVERBa")
   tlrv annotate("units", "1/h")
 
-  val arv = Double("c:arv") default(0.21)
+  val arv = Double("c:arv") default(0.21) param()
   arv annotate("description", "Dimerisation of REVERBa")
   arv annotate("units", "1/nM 1/h")
 
-  val drv = Double("c:drv") default(3.62)
+  val drv = Double("c:drv") default(3.62) param()
   drv annotate("description", "Undimerisation of REVERBa")
   drv annotate("units", "1/h")
 
-  val uRv = Double("c:uRv") default(16.25)
+  val uRv = Double("c:uRv") default(16.25) param()
   uRv annotate("description", "Degradation of REVERBa")
   uRv annotate("units", "1/h")
 

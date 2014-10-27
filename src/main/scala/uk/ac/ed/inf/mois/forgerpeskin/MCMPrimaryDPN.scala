@@ -383,210 +383,209 @@ class MCMPrimaryDPN extends DeterministicReactionNetwork with VarCalc {
 
   reactions(
 
-    McPo --> McPo + Po at tlp
-    McPt --> McPt + Pt at tlp
-    McRo --> McRo + Ro at tlr
-    McRt --> McRt + Rt at tlr
+    McPo --> McPo + Po at tlp,
+    McPt --> McPt + Pt at tlp,
+    McRo --> McRo + Ro at tlr,
+    McRt --> McRt + Rt at tlr,
 
-    Po + C --> PoC at ac
-    Pt + C --> PtC at ac
-    Pop + C --> PopC at ac
-    Ptp + C --> PtpC at ac
-    Popp + C --> PoppC at ac
-    Ptpp + C --> PtppC at ac
-    PopRo + C --> PopCRo at ac
-    PtpRo + C --> PtpCRo at ac
-    PopRt + C --> PopCRt at ac
-    PtpRt + C --> PtpCRt at ac
-    PoppRo + C --> PoppCRo at ac
-    PtppRo + C --> PtppCRo at ac
-    PoppRt + C --> PoppCRt at ac
-    PtppRt + C --> PtppCRt at ac
-    Ponp + Cn --> PonpCn at (Nf * ac)
-    Ptnp + Cn --> PtnpCn at (Nf * ac)
-    Ponpp + Cn --> PonppCn at (Nf * ac)
-    Ptnpp + Cn --> PtnppCn at (Nf * ac)
-    PonpRon + Cn --> PonpCnRon at (Nf * ac)
-    PtnpRon + Cn --> PtnpCnRon at (Nf * ac)
-    PonpRtn + Cn --> PonpCnRtn at (Nf * ac)
-    PtnpRtn + Cn --> PtnpCnRtn at (Nf * ac)
-    PonppRon + Cn --> PonppCnRon at (Nf * ac)
-    PtnppRon + Cn --> PtnppCnRon at (Nf * ac)
-    PonppRtn + Cn --> PonppCnRtn at (Nf * ac)
-    PtnppRtn + Cn --> PtnppCnRtn at (Nf * ac)
+    Po + C --> PoC at ac,
+    Pt + C --> PtC at ac,
+    Pop + C --> PopC at ac,
+    Ptp + C --> PtpC at ac,
+    Popp + C --> PoppC at ac,
+    Ptpp + C --> PtppC at ac,
+    PopRo + C --> PopCRo at ac,
+    PtpRo + C --> PtpCRo at ac,
+    PopRt + C --> PopCRt at ac,
+    PtpRt + C --> PtpCRt at ac,
+    PoppRo + C --> PoppCRo at ac,
+    PtppRo + C --> PtppCRo at ac,
+    PoppRt + C --> PoppCRt at ac,
+    PtppRt + C --> PtppCRt at ac,
+    Ponp + Cn --> PonpCn at (Nf * ac),
+    Ptnp + Cn --> PtnpCn at (Nf.value * ac.value),
+    Ponpp + Cn --> PonppCn at (Nf * ac),
+    Ptnpp + Cn --> PtnppCn at (Nf * ac),
+    PonpRon + Cn --> PonpCnRon at (Nf * ac),
+    PtnpRon + Cn --> PtnpCnRon at (Nf * ac),
+    PonpRtn + Cn --> PonpCnRtn at (Nf * ac),
+    PtnpRtn + Cn --> PtnpCnRtn at (Nf * ac),
+    PonppRon + Cn --> PonppCnRon at (Nf * ac),
+    PtnppRon + Cn --> PtnppCnRon at (Nf * ac),
+    PonppRtn + Cn --> PonppCnRtn at (Nf * ac),
+    PtnppRtn + Cn --> PtnppCnRtn at (Nf * ac),
 
-    PoC --> Po + C at dc
-    PtC --> Pt + C at dc
-    PopC --> Pop + C at dc
-    PtpC --> Ptp + C at dc
-    PoppC --> Popp + C at dc
-    PtppC --> Ptpp + C at dc
-    PopCRo --> PopRo + C at dc
-    PtpCRo --> PtpRo + C at dc
-    PopCRt --> PopRt + C at dc
-    PtpCRt --> PtpRt + C at dc
-    PoppCRo --> PoppRo + C at dc
-    PoppCRt --> PoppRt + C at dc
-    PtppCRo --> PtppRo + C at dc
-    PtppCRt --> PtppRt + C at dc
-    PonpCn --> Ponp + Cn at dc
-    PtnpCn --> Ptnp + Cn at dc
-    PonppCn --> Ponpp + Cn at dc
-    PtnppCn --> Ptnpp + Cn at dc
-    PonpCnRon --> PonpRon + Cn at dc
-    PtnpCnRon --> PtnpRon + Cn at dc
-    PonpCnRtn --> PonpRtn + Cn at dc
-    PtnpCnRtn --> PtnpRtn + Cn at dc
-    PonppCnRon --> PonppRon + Cn at dc
-    PtnppCnRon --> PtnppRon + Cn at dc
-    PonppCnRtn --> PonppRtn + Cn at dc
-    PtnppCnRtn --> PtnppRtn + Cn at dc
+    PoC --> Po + C at dc,
+    PtC --> Pt + C at dc,
+    PopC --> Pop + C at dc,
+    PtpC --> Ptp + C at dc,
+    PoppC --> Popp + C at dc,
+    PtppC --> Ptpp + C at dc,
+    PopCRo --> PopRo + C at dc,
+    PtpCRo --> PtpRo + C at dc,
+    PopCRt --> PopRt + C at dc,
+    PtpCRt --> PtpRt + C at dc,
+    PoppCRo --> PoppRo + C at dc,
+    PoppCRt --> PoppRt + C at dc,
+    PtppCRo --> PtppRo + C at dc,
+    PtppCRt --> PtppRt + C at dc,
+    PonpCn --> Ponp + Cn at dc,
+    PtnpCn --> Ptnp + Cn at dc,
+    PonppCn --> Ponpp + Cn at dc,
+    PtnppCn --> Ptnpp + Cn at dc,
+    PonpCnRon --> PonpRon + Cn at dc,
+    PtnpCnRon --> PtnpRon + Cn at dc,
+    PonpCnRtn --> PonpRtn + Cn at dc,
+    PtnpCnRtn --> PtnpRtn + Cn at dc,
+    PonppCnRon --> PonppRon + Cn at dc,
+    PtnppCnRon --> PtnppRon + Cn at dc,
+    PonppCnRtn --> PonppRtn + Cn at dc,
+    PtnppCnRtn --> PtnppRtn + Cn at dc,
 
-    Pop + Ro --> PopRo at ar
-    PopC + Ro --> PopCRo at ar
-    PoppC + Ro --> PoppCRo at ar
-    Popp + Ro --> PoppRo at ar
-    Ptp + Ro --> PtpRo at ar
-    PtpC + Ro --> PtpCRo at ar
-    PtppC + Ro --> PtppCRo at ar
-    Ptpp + Ro --> PtppRo at ar
-    Pop + Rt --> PopRt at ar
-    PopC + Rt --> PopCRt at ar
-    PoppC + Rt --> PoppCRt at ar
-    Popp + Rt --> PoppRt at ar
-    Ptp at Rt --> PtpRt at ar
-    PtpC + Rt --> PtpCRt at ar
-    PtppC + Rt --> PtppCRt at ar
-    Ptpp + Rt --> PtppRt at ar
-    Ponp + Ron --> PonpRon at (Nf * ar)
-    PonpCn + Ron --> PonpCnRon at (Nf * ar)
-    PonppCn + Ron --> PonppCnRon at (Nf * ar)
-    Ponpp + Ron --> PonppRon at (Nf * ar)
-    Ptnp + Ron --> PtnpRon at (Nf * ar)
-    PtnpCn + Ron --> PtnpCnRon at (Nf * ar)
-    PtnppCn + Ron --> PtnppCnRon at (Nf * ar)
-    Ptnpp + Ron --> PtnppRon at (Nf * ar)
-    Ponp + Rtn --> PonpRtn at (Nf * ar)
-    PonpCn + Rtn --> PonpCnRtn at (Nf * ar)
-    PonppCn + Rtn --> PonppCnRtn at (Nf * ar)
-    Ponpp + Rtn --> PonppRtn at (Nf * ar)
-    Ptnp + Rtn --> PtnpRtn at (Nf * ar)
-    PtnpCn + Rtn --> PtnpCnRtn at (Nf * ar)
-    PtnppCn + Rtn --> PtnppCnRtn at (Nf * ar)
-    Ptnpp + Rtn --> PtnppRtn at (Nf * ar)
+    Pop + Ro --> PopRo at ar,
+    PopC + Ro --> PopCRo at ar,
+    PoppC + Ro --> PoppCRo at ar,
+    Popp + Ro --> PoppRo at ar,
+    Ptp + Ro --> PtpRo at ar,
+    PtpC + Ro --> PtpCRo at ar,
+    PtppC + Ro --> PtppCRo at ar,
+    Ptpp + Ro --> PtppRo at ar,
+    Pop + Rt --> PopRt at ar,
+    PopC + Rt --> PopCRt at ar,
+    PoppC + Rt --> PoppCRt at ar,
+    Popp + Rt --> PoppRt at ar,
+    Ptp at Rt --> PtpRt at ar,
+    PtpC + Rt --> PtpCRt at ar,
+    PtppC + Rt --> PtppCRt at ar,
+    Ptpp + Rt --> PtppRt at ar,
+    Ponp + Ron --> PonpRon at (Nf * ar),
+    PonpCn + Ron --> PonpCnRon at (Nf * ar),
+    PonppCn + Ron --> PonppCnRon at (Nf * ar),
+    Ponpp + Ron --> PonppRon at (Nf * ar),
+    Ptnp + Ron --> PtnpRon at (Nf * ar),
+    PtnpCn + Ron --> PtnpCnRon at (Nf * ar),
+    PtnppCn + Ron --> PtnppCnRon at (Nf * ar),
+    Ptnpp + Ron --> PtnppRon at (Nf * ar),
+    Ponp + Rtn --> PonpRtn at (Nf * ar),
+    PonpCn + Rtn --> PonpCnRtn at (Nf * ar),
+    PonppCn + Rtn --> PonppCnRtn at (Nf * ar),
+    Ponpp + Rtn --> PonppRtn at (Nf * ar),
+    Ptnp + Rtn --> PtnpRtn at (Nf * ar),
+    PtnpCn + Rtn --> PtnpCnRtn at (Nf * ar),
+    PtnppCn + Rtn --> PtnppCnRtn at (Nf * ar),
+    Ptnpp + Rtn --> PtnppRtn at (Nf * ar),
 
-    PopRo --> Pop + Ro at dr
-    PopCRo --> PopC + Ro at dr
-    PoppCRo --> PoppC + Ro at dr
-    PoppRo --> Popp + Ro at dr
-    PtpRo --> Ptp + Ro at dr
-    PtpCRo --> PtpC + Ro at dr
-    PtppCRo --> PtppC + Ro at dr
-    PtppRo --> Ptpp + Ro at dr
-    PopRt --> Pop + Rt at dr
-    PopCRt --> PopC + Rt at dr
-    PoppCRt --> PoppC + Rt at dr
-    PoppRt --> Popp + Rt at dr
-    PtpRt --> Ptp + Rt at dr
-    PtpCRt --> PtpC + Rt at dr
-    PtppCRt --> PtppC + Rt at dr
-    PtppRt --> Ptpp + Rt at dr
-    PonpRon --> Ponp + Ron at dr
-    PonpCnRon --> PonpCn + Ron at dr
-    PonppCnRon --> PonppCn + Ron at dr
-    PonppRon --> Ponpp + Ron at dr
-    PtnpRon --> Ptnp + Ron at dr
-    PtnpCnRon --> PtnpCn + Ron at dr
-    PtnppCnRon --> PtnppCn + Ron at dr
-    PtnppRon --> Ptnpp + Ron at dr
-    PonpRtn --> Ponp + Rtn at dr
-    PonpCnRtn --> PonpCn + Rtn at dr
-    PonppCnRtn --> PonppCn + Rtn at dr
-    PonppRtn --> Ponpp + Rtn at dr
-    PtnpRtn --> Ptnp + Rtn at dr
-    PtnpCnRtn --> PtnpCn + Rtn at dr
-    PtnppCnRtn --> PtnppCn + Rtn at dr
-    PtnppRtn --> Ptnpp + Rtn at dr
+    PopRo --> Pop + Ro at dr,
+    PopCRo --> PopC + Ro at dr,
+    PoppCRo --> PoppC + Ro at dr,
+    PoppRo --> Popp + Ro at dr,
+    PtpRo --> Ptp + Ro at dr,
+    PtpCRo --> PtpC + Ro at dr,
+    PtppCRo --> PtppC + Ro at dr,
+    PtppRo --> Ptpp + Ro at dr,
+    PopRt --> Pop + Rt at dr,
+    PopCRt --> PopC + Rt at dr,
+    PoppCRt --> PoppC + Rt at dr,
+    PoppRt --> Popp + Rt at dr,
+    PtpRt --> Ptp + Rt at dr,
+    PtpCRt --> PtpC + Rt at dr,
+    PtppCRt --> PtppC + Rt at dr,
+    PtppRt --> Ptpp + Rt at dr,
+    PonpRon --> Ponp + Ron at dr,
+    PonpCnRon --> PonpCn + Ron at dr,
+    PonppCnRon --> PonppCn + Ron at dr,
+    PonppRon --> Ponpp + Ron at dr,
+    PtnpRon --> Ptnp + Ron at dr,
+    PtnpCnRon --> PtnpCn + Ron at dr,
+    PtnppCnRon --> PtnppCn + Ron at dr,
+    PtnppRon --> Ptnpp + Ron at dr,
+    PonpRtn --> Ponp + Rtn at dr,
+    PonpCnRtn --> PonpCn + Rtn at dr,
+    PonppCnRtn --> PonppCn + Rtn at dr,
+    PonppRtn --> Ponpp + Rtn at dr,
+    PtnpRtn --> Ptnp + Rtn at dr,
+    PtnpCnRtn --> PtnpCn + Rtn at dr,
+    PtnppCnRtn --> PtnppCn + Rtn at dr,
+    PtnppRtn --> Ptnpp + Rtn at dr,
 
-    PoC --> PopC at hoo
-    PtC --> PtpC at hot
-    PopC --> PoppC at hto
-    PtpC --> PtppC at htt
-    PopCRo --> PoppCRo at hto
-    PtpCRo --> PtppCRo at htt
-    PopCRt --> PoppCRt at hto
-    PtpCRt --> PtppCRt at htt
-    PonpCn --> PonppCn at hto
-    PtnpCn --> PtnppCn at htt
-    PonpCnRon --> PonppCnRon at hto
-    PtnpCnRon --> PtnppCnRon at htt
-    PonpCnRtn --> PonppCnRtn at hto
-    PtnpCnRtn --> PtnppCnRtn at htt
+    PoC --> PopC at hoo,
+    PtC --> PtpC at hot,
+    PopC --> PoppC at hto,
+    PtpC --> PtppC at htt,
+    PopCRo --> PoppCRo at hto,
+    PtpCRo --> PtppCRo at htt,
+    PopCRt --> PoppCRt at hto,
+    PtpCRt --> PtppCRt at htt,
+    PonpCn --> PonppCn at hto,
+    PtnpCn --> PtnppCn at htt,
+    PonpCnRon --> PonppCnRon at hto,
+    PtnpCnRon --> PtnppCnRon at htt,
+    PonpCnRtn --> PonppCnRtn at hto,
+    PtnpCnRtn --> PtnppCnRtn at htt,
 
-    Pop --> Ponp at nl
-    PopC --> PonpCn at nl
-    PopRo --> PonpRon at nl
-    PopRt --> PonpRtn at nl
-    PopCRo --> PonpCnRon at nl
-    PopCRt --> PonpCnRtn at nl
-    Ptp --> Ptnp at nl
-    PtpC --> PtnpCn at nl
-    PtpRo --> PtnpRon at nl
-    PtpRt --> PtnpRtn at nl
-    PtpCRo --> PtnpCnRon at nl
-    PtpCRt --> PtnpCnRtn at nl
+    Pop --> Ponp at nl,
+    PopC --> PonpCn at nl,
+    PopRo --> PonpRon at nl,
+    PopRt --> PonpRtn at nl,
+    PopCRo --> PonpCnRon at nl,
+    PopCRt --> PonpCnRtn at nl,
+    Ptp --> Ptnp at nl,
+    PtpC --> PtnpCn at nl,
+    PtpRo --> PtnpRon at nl,
+    PtpRt --> PtnpRtn at nl,
+    PtpCRo --> PtnpCnRon at nl,
+    PtpCRt --> PtnpCnRtn at nl,
 
-    Ponp --> Pop at ne
-    PonpCn --> PopC at ne
-    PonpRon --> PopRo at ne
-    PonpRtn --> PopRt at ne
-    PonpCnRon --> PopCRo at ne
-    PonpCnRtn --> PopCRt at ne
-    Ponpp --> Popp at ne
-    PonppCn --> PoppC at ne
-    PonppRon --> PoppRo at ne
-    PonppRtn --> PoppRt at ne
-    PonppCnRon --> PoppCRo at ne
-    PonppCnRtn --> PoppCRt at ne
-    Ptnp --> Ptp at ne
-    PtnpCn --> PtpC at ne
-    PtnpRon --> PtpRo at ne
-    PtnpRtn --> PtpRt at ne
-    PtnpCnRon --> PtpCRo at ne
-    PtnpCnRtn --> PtpCRt at ne
-    Ptnpp --> Ptpp at ne
-    PtnppCn --> PtppC at ne
-    PtnppRon --> PtppRo at ne
-    PtnppRtn --> PtppRt at ne
-    PtnppCnRon --> PtppCRo at ne
-    PtnppCnRtn --> PtppCRt at ne
+    Ponp --> Pop at ne,
+    PonpCn --> PopC at ne,
+    PonpRon --> PopRo at ne,
+    PonpRtn --> PopRt at ne,
+    PonpCnRon --> PopCRo at ne,
+    PonpCnRtn --> PopCRt at ne,
+    Ponpp --> Popp at ne,
+    PonppCn --> PoppC at ne,
+    PonppRon --> PoppRo at ne,
+    PonppRtn --> PoppRt at ne,
+    PonppCnRon --> PoppCRo at ne,
+    PonppCnRtn --> PoppCRt at ne,
+    Ptnp --> Ptp at ne,
+    PtnpCn --> PtpC at ne,
+    PtnpRon --> PtpRo at ne,
+    PtnpRtn --> PtpRt at ne,
+    PtnpCnRon --> PtpCRo at ne,
+    PtnpCnRtn --> PtpCRt at ne,
+    Ptnpp --> Ptpp at ne,
+    PtnppCn --> PtppC at ne,
+    PtnppRon --> PtppRo at ne,
+    PtnppRtn --> PtppRt at ne,
+    PtnppCnRon --> PtppCRo at ne,
+    PtnppCnRtn --> PtppCRt at ne,
 
-    Po --> () at upu
-    PoC --> C at upu
-    Pt --> () at upu
-    PtC --> C at upu
-    Ro --> () at uro
-    Rt --> () at urt
-    Ron --> () at uro
-    Rtn --> () at urt
+    Po --> () at upu,
+    PoC --> C at upu,
+    Pt --> () at upu,
+    PtC --> C at upu,
+    Ro --> () at uro,
+    Rt --> () at urt,
+    Ron --> () at uro,
+    Rtn --> () at urt,
 
-    Pop --> () at up
-    PopC --> C at up
-    Popp --> () at up
-    PoppC --> C at up
-    Ponp --> () at up
-    PonpCn --> Cn at up
-    Ponpp --> () at up
-    PonppCn --> Cn at up
-    Ptp --> () at up
-    PtpC --> C at up
-    Ptpp --> () at up
-    PtppC --> C at up
-    Ptnp --> () at up
-    PtnpCn --> Cn at up
-    Ptnpp --> () at up
+    Pop --> () at up,
+    PopC --> C at up,
+    Popp --> () at up,
+    PoppC --> C at up,
+    Ponp --> () at up,
+    PonpCn --> Cn at up,
+    Ponpp --> () at up,
+    PonppCn --> Cn at up,
+    Ptp --> () at up,
+    PtpC --> C at up,
+    Ptpp --> () at up,
+    PtppC --> C at up,
+    Ptnp --> () at up,
+    PtnpCn --> Cn at up,
+    Ptnpp --> () at up,
     PtnppCn --> Cn at up
-
   )
 
 }

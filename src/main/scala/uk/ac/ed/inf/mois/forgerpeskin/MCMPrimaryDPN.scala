@@ -376,10 +376,9 @@ class MCMPrimaryDPN extends DeterministicReactionNetwork with VarCalc {
   /* Derived quantities */
 
   val C = Species("c:C") default(0)
-  /*C annotate("description", "Total unbound cytoplasmic kinase")
-   *C annotate("units", "nM")
-   *calc(C) := Ct - (PoC + PtC + PopC + PtpC + PoppC + PtppC + PopCRo + PopCRt + PtpCRo + PtpCRt + PoppCRo + PoppCRt + PtppCRo + PtppCRt + PonpCn + PtnpCn + PonppCn + PtnppCn + PonpCnRon + PonpCnRtn + PtnpCnRon + PtnpCnRtn + PonppCnRon + PonppCnRtn + PtnppCnRon + PtnppCnRtn + Cn)
-   */
+  C annotate("description", "Total unbound cytoplasmic kinase")
+  C annotate("units", "nM")
+  calc(C) := Ct - (PoC + PtC + PopC + PtpC + PoppC + PtppC + PopCRo + PopCRt + PtpCRo + PtpCRt + PoppCRo + PoppCRt + PtppCRo + PtppCRt + PonpCn + PtnpCn + PonppCn + PtnppCn + PonpCnRon + PonpCnRtn + PtnpCnRon + PtnpCnRtn + PonppCnRon + PonppCnRtn + PtnppCnRon + PtnppCnRtn + Cn)
 
   reactions(
 
@@ -592,13 +591,14 @@ class MCMPrimaryDPN extends DeterministicReactionNetwork with VarCalc {
 }
 
 
-class MCCCalc extends VarCalc{
-
-  /* Derived quantities */
-
-  val C = Species("c:C") default(0)
-  C annotate("description", "Total unbound cytoplasmic kinase")
-  C annotate("units", "nM")
-  calc(C) := Ct - (PoC + PtC + PopC + PtpC + PoppC + PtppC + PopCRo + PopCRt + PtpCRo + PtpCRt + PoppCRo + PoppCRt + PtppCRo + PtppCRt + PonpCn + PtnpCn + PonppCn + PtnppCn + PonpCnRon + PonpCnRtn + PtnpCnRon + PtnpCnRtn + PonppCnRon + PonppCnRtn + PtnppCnRon + PtnppCnRtn + Cn)
-
-}
+/*class MCCCalc extends VarCalc{
+ *
+ *  /* Derived quantities */
+ *
+ *  val C = Species("c:C") default(0)
+ *  C annotate("description", "Total unbound cytoplasmic kinase")
+ *  C annotate("units", "nM")
+ *  calc(C) := Ct - (PoC + PtC + PopC + PtpC + PoppC + PtppC + PopCRo + PopCRt + PtpCRo + PtpCRt + PoppCRo + PoppCRt + PtppCRo + PtppCRt + PonpCn + PtnpCn + PonppCn + PtnppCn + PonpCnRon + PonpCnRtn + PtnpCnRon + PtnpCnRtn + PonppCnRon + PonppCnRtn + PtnppCnRon + PtnppCnRtn + Cn)
+ *
+ *}
+ */

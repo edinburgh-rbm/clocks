@@ -23,7 +23,7 @@ import uk.ac.ed.inf.mois.sched.NaiveScheduler
 import spire.implicits._
 import uk.ac.ed.inf.mois.implicits._
 
-class MCMGenes extends ODE with VarCalc {
+class MCCGenes extends ODE with VarCalc {
 
   /* Global variables */
 

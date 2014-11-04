@@ -24,14 +24,28 @@ import spire.implicits._
 import uk.ac.ed.inf.mois.implicits._
 
 
-class MCMModelModularFull2 extends Model {
+class MCCLight extends Process {
 
-  val process = new ProcessGroup {
-    scheduler = new NaiveScheduler(0.01)
+  val L = Double("c:L")
+  L annotate("description", "Effect of light level on transcription")
+
+ /*
+  * val Lon = Double("c:Lon") default(0.000339)
+  * Lon annotate("description", "Light level (light on)")
+  *
+  * val Loff = Double("c:Loff") default(0)
+  * Loff annotate("description", "Light level (light off)")
+  *
+  * If Math.floor([T]/12) is odd, use Loff as input to MammalianCircadianClock.
+  * Else, use Lon.
+  *
+  */
+
+  override def step(t: Double, tau: Double) {
+    if (((t + tau)/12).floor % 2 == 0) {
+      L := 0.000339
+    } else {
+      L := 0
+    }
   }
-  process += new MCMPrimary()
-  process += new MCMSecondary()
-  process += new MCMGenes()
-  process += new MCMLight()
-
 }

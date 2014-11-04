@@ -24,7 +24,7 @@ import spire.implicits._
 import uk.ac.ed.inf.mois.implicits._
 
 
-class MCMProteins extends ODE with VarCalc {
+class MCCProteins extends ODE with VarCalc {
 
   /* Global variables */
 

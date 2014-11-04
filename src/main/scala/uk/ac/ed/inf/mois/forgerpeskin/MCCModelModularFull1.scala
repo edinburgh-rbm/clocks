@@ -24,14 +24,14 @@ import spire.implicits._
 import uk.ac.ed.inf.mois.implicits._
 
 
-class MCMModelModularFull1 extends Model {
+class MCCModelModularFull1 extends Model {
 
   val process = new ProcessGroup {
     scheduler = new NaiveScheduler(0.01)
   }
-  process += new MCMPrimary()
-  process += new MCMSecondary()
-  process += new MCMGenes()
-  process += new MCMLight()
+  process += new MCCPrimary()
+  process += new MCCSecondary()
+  process += new MCCGenes()
+  process += new MCCLight()
 
 }

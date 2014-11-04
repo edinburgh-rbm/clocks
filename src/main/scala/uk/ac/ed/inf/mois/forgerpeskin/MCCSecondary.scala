@@ -24,7 +24,7 @@ import spire.implicits._
 import uk.ac.ed.inf.mois.implicits._
 
 
-class MCMSecondary extends ODE with VarCalc {
+class MCCSecondary extends ODE with VarCalc {
 
   /* Global variables */
 

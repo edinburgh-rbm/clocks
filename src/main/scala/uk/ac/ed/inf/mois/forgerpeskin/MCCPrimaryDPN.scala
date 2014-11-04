@@ -25,7 +25,7 @@ import spire.implicits._
 import uk.ac.ed.inf.mois.implicits._
 
 
-class MCMPrimaryDPN extends DeterministicReactionNetwork with VarCalc {
+class MCCPrimaryDPN extends DeterministicReactionNetwork with VarCalc {
 
   /* Global variables */
 

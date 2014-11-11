@@ -19,7 +19,7 @@ name := "clocks-models"
 
 organization := "uk.ac.ed.inf"
 
-version := "1.99.12-SNAPSHOT"
+version := "1.99.13-SNAPSHOT"
 
 scalaVersion := "2.11.2"
 
@@ -29,6 +29,6 @@ resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repos
 
 resolvers += "ucar-unidata-releases" at "https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/"
 
-libraryDependencies += "uk.ac.ed.inf" %% "mois" % "1.99.12-SNAPSHOT"
+libraryDependencies += "uk.ac.ed.inf" %% "mois" % "1.99.13-SNAPSHOT"
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.0" % "test"

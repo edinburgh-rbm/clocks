@@ -26,4 +26,57 @@ import uk.ac.ed.inf.mois.implicits._
 
 class FunctionalStructural extends Process {
 
+  /* Model inputs */
+
+  val Temperature = Double("c:Temperature")
+  Temperature annotate("description", "Hourly temperature")
+  Temperature annotate("units", "C")
+
+  val T_b = Double("c:T_b") default(3) param()
+  T_b annotate("description", "Base temperature value")
+
+  val Thermaltime = Double("c:Thermaltime")
+  Temperature annotate("description", "Thermal time unit per hour")
+  Temperature annotate("units", "Cd")
+
+  /* Inputs from CDM */
+
+  val LeafCarbon = Double("c:LeafCarbon")
+  val RootCarbon = Double("c:RootCarbon")
+
+
+  /* Functional Structural Plant
+   * Assume that the model begins at plant emergence, not at time of sowing.
+   */
+
+  val LateVegetativeStageSwitchThreshold = Double("c:LateVegetativeStageSwitchThreshold") default(355)
+  LateVegetativeStageSwitchThreshold annotate("units", "Cd")
+
+  val EarlyVegetativeStageGrowth = Double("c:EarlyVegetativeStageGrowth") default(30.3)
+  EarlyVegetativeStageGrowth annotate("units", "Cd")
+
+  val LateVegetativeStageGrowth = Double("c:LateVegetativeStageGrowth") default(11.9)
+  LateVegetativeStageGrowth annotate("units", "Cd")
+
+  val Total_Cd = Double("c:Total_Cd") default(0)
+  Total_Cd("description", "Accumulated degree days")
+  Total_Cd("units", "Cd")
+
+  /* Every time step, add Temperature * (tau/24) to the degree day. Different from Thermaltime due to tau vs. hourly? */
+  override def step(t: Double, tau: Double) {
+    calc(Total_Cd) := Total_Cd + (Temperature * (tau/24))
+  }
+
+  val j = Double("c:j") default(1)
+  j annotate("description", "Number of completed growth cycles")
+
+  if (Total_Cd < LateVegetativeStageSwitchThreshold) {
+    calc(j) := (Total_Cd / EarlyVegetativeStageGrowth).floor
+  } else {
+    calc(j) := ((Total_Cd - LateVegetativeStageSwitchThreshold) / LateVegetativeStageGrowth).floor + (LatevegetativeStageSwitchThreshold / EarlyVegetativeStageGrowth).floor
+  }
+
+  val NumberOfLeaves = Double("c:NumberOfLeaves") default(2)
+  calc(NumberOfLeaves) := j + 1
+
 }

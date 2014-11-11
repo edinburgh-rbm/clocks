@@ -25,6 +25,109 @@ import spire.implicits._
 import uk.ac.ed.inf.mois.implicits._
 
 
+class MCCPrimaryDPNRates extends VarCalc {
+
+  /* Global variables */
+
+  val umR = Double("c:umR") default(0.3)
+  umR annotate("description", "Degradation of CRY1 and CRY2 mRNA")
+  umR annotate("units", "1/h")
+
+  val up = Double("c:up") default(3.39)
+  up annotate("description", "Degradation of PERp unbound to CRY")
+  up annotate("units", "1/h")
+
+  val ar = Double("c:ar") default(0.27)
+  ar annotate("description", "Binding of PER1 and PER2 to CRY1 and CRY2")
+  ar annotate("units", "1/nM 1/h")
+
+  val dr = Double("c:dr") default(0.35)
+  dr annotate("description", "Unbinding of PER1 and PER2 from CRY1 and CRY2")
+  dr annotate("units", "1/h")
+
+  val nl = Double("c:nl") default(2.31)
+  nl annotate("description", "Nuclear localisation of PERp and bound proteins")
+  nl annotate("units", "1/h")
+
+  val ne = Double("c:ne") default(0.71)
+  ne annotate("description", "Nuclear export of PER and bound proteins")
+  ne annotate("units", "1/h")
+
+  val Nf = Double("c:Nf") default(115.76)
+  Nf annotate("description", "Ratio of nuclear to cytoplasmic compartment volume")
+
+
+  /* Kinase */
+
+  val ac = Double("c:ac") default(0.47)
+  ac annotate("description", "Binding of PER1 and PER2 to kinases")
+  ac annotate("units", "1/nM 1/h")
+
+  val dc = Double("c:dc") default(5.09)
+  dc annotate("description", "Unbinding of PER1 and PER2 from kinases")
+  dc annotate("units", "1/h")
+
+  val hoo = Double("c:hoo") default(0.29)
+  hoo annotate("description", "Initial phosphorylation of PER1")
+  hoo annotate("units", "1/h")
+
+  val hot = Double("c:hot") default(0.09)
+  hot annotate("description", "Initial phosphorylation of PER2")
+  hot annotate("units", "1/h")
+
+  val hto = Double("c:hto") default(1.45)
+  hto annotate("description", "Phosphorylation preventing nuclear localisation of PER1")
+  hto annotate("units", "1/h")
+
+  val htt = Double("c:htt") default(0)
+  htt annotate("description", "Phosphorylation preventing nuclear localisation of PER2")
+  htt annotate("units", "1/h")
+
+
+  /* PER Proteins */
+
+  val tlp = Double("c:tlp") default(10)
+  tlp annotate("description", "Translation of PER1 and PER2")
+  tlp annotate("units", "1/h")
+
+  val upu = Double("c:upu") default(0.08)
+  upu annotate("description", "Degradation of unphosphorylated PER")
+  upu annotate("units", "1/h")
+
+
+  /* CRY Proteins */
+
+  val tlr = Double("c:tlr") default(1.031)
+  tlr annotate("description", "Translation of CRY1 and CRY2")
+  tlr annotate("units", "1/h")
+
+  val uro = Double("c:uro") default(0.44)
+  uro annotate("description", "Degradation of CRY1 unbound to PER")
+  uro annotate("units", "1/h")
+
+  val urt = Double("c:urt") default(0.59)
+  urt annotate("description", "Degradation of CRY2 unbound to PER")
+  urt annotate("units", "1/h")
+
+
+  /* Derived quantities */
+
+  val Nfar = Double("c:Nfar") default(0)
+  Nfar annotate("description", "Nf * ar")
+  Nfar annotate("units", "1/nM 1/h")
+
+  val Nfac = Double("c:Nfac") default(0)
+  Nfac annotate("description", "Nf * ac")
+  Nfac annotate("units", "1/nM 1/h")
+
+
+  /* Calculations */
+
+  calc(Nfar) := Nf * ar
+  calc(Nfac) := Nf * ac
+
+}
+
 class MCCPrimaryDPN extends DeterministicReactionNetwork with VarCalc {
 
   /* Global variables */
@@ -320,7 +423,7 @@ class MCCPrimaryDPN extends DeterministicReactionNetwork with VarCalc {
   PoppCRo annotate("description", "Cytoplasmic kinase-bound PER1pp-CRY1")
   PoppCRo annotate("units", "nM")
 
-  val PtppCRo = Double("c:PtppCRo") default(0)
+  val PtppCRo = Species("c:PtppCRo") default(0)
   PtppCRo annotate("description", "Cytoplasmic kinase-bound PER2pp-CRY1")
   PtppCRo annotate("units", "nM")
 
@@ -380,6 +483,15 @@ class MCCPrimaryDPN extends DeterministicReactionNetwork with VarCalc {
   C annotate("units", "nM")
   calc(C) := Ct - (PoC + PtC + PopC + PtpC + PoppC + PtppC + PopCRo + PopCRt + PtpCRo + PtpCRt + PoppCRo + PoppCRt + PtppCRo + PtppCRt + PonpCn + PtnpCn + PonppCn + PtnppCn + PonpCnRon + PonpCnRtn + PtnpCnRon + PtnpCnRtn + PonppCnRon + PonppCnRtn + PtnppCnRon + PtnppCnRtn + Cn)
 
+  val Nfar = Double("c:Nfar") default(0)
+  Nfar annotate("description", "Nf * ar")
+  Nfar annotate("units", "1/nM 1/h")
+
+  val Nfac = Double("c:Nfac") default(0)
+  Nfac annotate("description", "Nf * ac")
+  Nfac annotate("units", "1/nM 1/h")
+
+
   reactions(
 
     McPo --> McPo + Po at tlp,
@@ -401,18 +513,18 @@ class MCCPrimaryDPN extends DeterministicReactionNetwork with VarCalc {
     PtppRo + C --> PtppCRo at ac,
     PoppRt + C --> PoppCRt at ac,
     PtppRt + C --> PtppCRt at ac,
-    Ponp + Cn --> PonpCn at (Nf * ac),
-    Ptnp + Cn --> PtnpCn at (Nf.value * ac.value),
-    Ponpp + Cn --> PonppCn at (Nf * ac),
-    Ptnpp + Cn --> PtnppCn at (Nf * ac),
-    PonpRon + Cn --> PonpCnRon at (Nf * ac),
-    PtnpRon + Cn --> PtnpCnRon at (Nf * ac),
-    PonpRtn + Cn --> PonpCnRtn at (Nf * ac),
-    PtnpRtn + Cn --> PtnpCnRtn at (Nf * ac),
-    PonppRon + Cn --> PonppCnRon at (Nf * ac),
-    PtnppRon + Cn --> PtnppCnRon at (Nf * ac),
-    PonppRtn + Cn --> PonppCnRtn at (Nf * ac),
-    PtnppRtn + Cn --> PtnppCnRtn at (Nf * ac),
+    Ponp + Cn --> PonpCn at Nfac,
+    Ptnp + Cn --> PtnpCn at Nfac,
+    Ponpp + Cn --> PonppCn at Nfac,
+    Ptnpp + Cn --> PtnppCn at Nfac,
+    PonpRon + Cn --> PonpCnRon at Nfac,
+    PtnpRon + Cn --> PtnpCnRon at Nfac,
+    PonpRtn + Cn --> PonpCnRtn at Nfac,
+    PtnpRtn + Cn --> PtnpCnRtn at Nfac,
+    PonppRon + Cn --> PonppCnRon at Nfac,
+    PtnppRon + Cn --> PtnppCnRon at Nfac,
+    PonppRtn + Cn --> PonppCnRtn at Nfac,
+    PtnppRtn + Cn --> PtnppCnRtn at Nfac,
 
     PoC --> Po + C at dc,
     PtC --> Pt + C at dc,
@@ -453,26 +565,26 @@ class MCCPrimaryDPN extends DeterministicReactionNetwork with VarCalc {
     PopC + Rt --> PopCRt at ar,
     PoppC + Rt --> PoppCRt at ar,
     Popp + Rt --> PoppRt at ar,
-    Ptp at Rt --> PtpRt at ar,
+    Ptp + Rt --> PtpRt at ar,
     PtpC + Rt --> PtpCRt at ar,
     PtppC + Rt --> PtppCRt at ar,
     Ptpp + Rt --> PtppRt at ar,
-    Ponp + Ron --> PonpRon at (Nf * ar),
-    PonpCn + Ron --> PonpCnRon at (Nf * ar),
-    PonppCn + Ron --> PonppCnRon at (Nf * ar),
-    Ponpp + Ron --> PonppRon at (Nf * ar),
-    Ptnp + Ron --> PtnpRon at (Nf * ar),
-    PtnpCn + Ron --> PtnpCnRon at (Nf * ar),
-    PtnppCn + Ron --> PtnppCnRon at (Nf * ar),
-    Ptnpp + Ron --> PtnppRon at (Nf * ar),
-    Ponp + Rtn --> PonpRtn at (Nf * ar),
-    PonpCn + Rtn --> PonpCnRtn at (Nf * ar),
-    PonppCn + Rtn --> PonppCnRtn at (Nf * ar),
-    Ponpp + Rtn --> PonppRtn at (Nf * ar),
-    Ptnp + Rtn --> PtnpRtn at (Nf * ar),
-    PtnpCn + Rtn --> PtnpCnRtn at (Nf * ar),
-    PtnppCn + Rtn --> PtnppCnRtn at (Nf * ar),
-    Ptnpp + Rtn --> PtnppRtn at (Nf * ar),
+    Ponp + Ron --> PonpRon at Nfar,
+    PonpCn + Ron --> PonpCnRon at Nfar,
+    PonppCn + Ron --> PonppCnRon at Nfar,
+    Ponpp + Ron --> PonppRon at Nfar,
+    Ptnp + Ron --> PtnpRon at Nfar,
+    PtnpCn + Ron --> PtnpCnRon at Nfar,
+    PtnppCn + Ron --> PtnppCnRon at Nfar,
+    Ptnpp + Ron --> PtnppRon at Nfar,
+    Ponp + Rtn --> PonpRtn at Nfar,
+    PonpCn + Rtn --> PonpCnRtn at Nfar,
+    PonppCn + Rtn --> PonppCnRtn at Nfar,
+    Ponpp + Rtn --> PonppRtn at Nfar,
+    Ptnp + Rtn --> PtnpRtn at Nfar,
+    PtnpCn + Rtn --> PtnpCnRtn at Nfar,
+    PtnppCn + Rtn --> PtnppCnRtn at Nfar,
+    Ptnpp + Rtn --> PtnppRtn at Nfar,
 
     PopRo --> Pop + Ro at dr,
     PopCRo --> PopC + Ro at dr,
@@ -588,16 +700,3 @@ class MCCPrimaryDPN extends DeterministicReactionNetwork with VarCalc {
   )
 
 }
-
-
-/*class MCCCalc extends VarCalc{
- *
- *  /* Derived quantities */
- *
- *  val C = Species("c:C") default(0)
- *  C annotate("description", "Total unbound cytoplasmic kinase")
- *  C annotate("units", "nM")
- *  calc(C) := Ct - (PoC + PtC + PopC + PtpC + PoppC + PtppC + PopCRo + PopCRt + PtpCRo + PtpCRt + PoppCRo + PoppCRt + PtppCRo + PtppCRt + PonpCn + PtnpCn + PonppCn + PtnppCn + PonpCnRon + PonpCnRtn + PtnpCnRon + PtnpCnRtn + PonppCnRon + PonppCnRtn + PtnppCnRon + PtnppCnRtn + Cn)
- *
- *}
- */

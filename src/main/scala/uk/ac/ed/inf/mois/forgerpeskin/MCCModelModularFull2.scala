@@ -29,7 +29,8 @@ class MCCModelModularFull2 extends Model {
   val process = new ProcessGroup {
     scheduler = new NaiveScheduler(0.01)
   }
-  process += new MCCPrimary()
+  process += new MCCPrimaryDPN()
+  process += new MCCPrimaryDPNRates()
   process += new MCCSecondary()
   process += new MCCGenes()
   process += new MCCLight()

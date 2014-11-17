@@ -33,7 +33,7 @@ class MCCSecondary extends ODE with VarCalc {
   nl annotate("units", "1/h")
 
   val ne = Double("c:ne") default(0.71) param()
-  ne annotate("description", "Nuclear export of PER and boun proteins")
+  ne annotate("description", "Nuclear export of PER and bound proteins")
   ne annotate("units", "1/h")
 
   val Nf = Double("c:Nf") default(115.76) param()
@@ -80,6 +80,7 @@ class MCCSecondary extends ODE with VarCalc {
   val uRv = Double("c:uRv") default(16.25) param()
   uRv annotate("description", "Degradation of REVERBa")
   uRv annotate("units", "1/h")
+
 
   d(Rv) := (tlrv * McRv) - (2 * arv * Rv * Rv) + (2 * drv * RvRv) - (nl * Rv) + (ne * Rvn) - (uRv * Rv)
   d(Rvn) := - (2 * Nf * arv * Rvn * Rvn) + (2 * drv * RvnRvn) + (nl * Rv) - (ne * Rvn) - (uRv * Rvn)

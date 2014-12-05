@@ -20,11 +20,21 @@ package uk.ac.ed.inf.mois.millar
 
 import uk.ac.ed.inf.mois.{Model, ODE, Process, ProcessGroup, VarCalc, Math}
 import uk.ac.ed.inf.mois.sched.NaiveScheduler
+import scala.math
 import spire.implicits._
 import uk.ac.ed.inf.mois.implicits._
 
 
 class Photothermal extends Process {
+
+  val t = Double("sim:t")
+  t annotate("description", "Simulation time")
+  t annotate("units", "hour")
+
+  val h = Double("sim:h")
+  h annotate("description", "Simulation 24-hour")
+  h annotate("units", "hour")
+
 
   /* Model inputs */
 
@@ -87,9 +97,8 @@ class Photothermal extends Process {
   val P_night = Double("c:P_night") default(0.1782) param()
   P_night annotate("description", "Gating function to account for sensitivity to night temperature")
 
-  /* Again, accessing simulation time directly here!! */
   val P_t = Double("c:P_t")
-  if ((t >= 0) && (t <= 12)) {
+  if (h < 12) {
     calc(P_t) := P_day
   } else {
     calc(P_t) := P_night

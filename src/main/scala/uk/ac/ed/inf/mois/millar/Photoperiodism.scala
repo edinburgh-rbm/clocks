@@ -20,15 +20,25 @@ package uk.ac.ed.inf.mois.millar
 
 import uk.ac.ed.inf.mois.{Model, ODE, Process, ProcessGroup, VarCalc, Math}
 import uk.ac.ed.inf.mois.sched.NaiveScheduler
+import scala.math
 import spire.implicits._
 import uk.ac.ed.inf.mois.implicits._
 
 
 class Photoperiodism extends ODE {
 
+  val t = Double("sim:t")
+  t annotate("description", "Simulation time")
+  t annotate("units", "hour")
+
+  val h = Double("sim:h")
+  h annotate("description", "Simulation 24-hour")
+  h annotate("units", "hour")
+
   val DaylightHours = Double("c:DaylightHours")
   DaylightHours annotate("description", "Daylight hours")
   DaylightHours annotate("units", "h")
+
 
   val v1 = Double("c:v1") default(2.4514) param()
   v1 annotate("description", "Coupling constant of light activation of LHY transcription")
@@ -306,11 +316,9 @@ class Photoperiodism extends ODE {
   val CO = Double("c:CO")
   val FT = Double("c:FT")
 
-  /* Assume 12-hour photoperiod, with sunrise at t=0 and sunset at t=12.
-   * Again, need easier way of accessing simulation time...
-   */
+  /* Assume 12-hour photoperiod, with sunrise at h=0 and sunset at h=12. */
   val Theta_light = Double("c:Theta_light")
-  calc(Theta_light) := (1/4) * (1 + tanh(6 * (t - 0))) * (1 - tanh(6 * (t - DaylightHours)))
+  calc(Theta_light) := (1/4) * (1 + tanh(6 * (h - 0))) * (1 - tanh(6 * (h - DaylightHours)))
   
 
   d(P) := (0.5 * (1 - Theta_light)) - (P * Theta_light) - ((1.2 * P) / (1.2 + P))
@@ -336,8 +344,35 @@ class Photoperiodism extends ODE {
 
 
   /* This value needs to keep track of the total amount of FT accumulated over the previous 24 hours from the hour at hand.
-   * How?
+   * But we don't know the timestep at which this module will operate, and hence how many FT values we'll have to track!!!
+   * ... ouch.
    */
+  val FTs = new CircularBuffer[Double](24)
+  FTs.push(FT)
+
   val FTarea = Double("c:FTarea")
+  FTarea annotate("description", "Total amount of FT accumulated over previous 24 hours")
+  FTarea := FTs.sumAll
 
 }
+
+class CircularBuffer[T](size: Int)(implicit mf: Manifest[T]) {
+
+    private val arr = new scala.collection.mutable.Array[T]()
+
+    private var cursor = 0
+
+    def push(value: T) {
+      try {
+        arr(cursor) = value
+        cursor += 1
+        cursor %= size
+      }
+    }
+
+    def sumAll: [T] = {
+      try {
+        arr.sum
+      }
+    }
+  }

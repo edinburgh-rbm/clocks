@@ -27,12 +27,12 @@ import uk.ac.ed.inf.mois.implicits._
 class MillarModel extends Model {
 
   val process = new ProcessGroup {
-    scheduler = new NaiveScheduler(0.01)
+    scheduler = new CompositionScheduler(1.00)
   }
-  process += new Input()
+  process += new InputTSV()
+  process += new Photoperiodism()
+  process += new Photothermal()
   process += new CarbonDynamic()
   process += new FunctionalStructural()
-  process += new Photothermal()
-  process += new Photoperiodism()
 
 }

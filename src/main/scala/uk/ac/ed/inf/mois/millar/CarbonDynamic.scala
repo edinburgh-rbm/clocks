@@ -20,11 +20,21 @@ package uk.ac.ed.inf.mois.millar
 
 import uk.ac.ed.inf.mois.{Model, ODE, Process, ProcessGroup, VarCalc, Math}
 import uk.ac.ed.inf.mois.sched.NaiveScheduler
+import scala.math
 import spire.implicits._
 import uk.ac.ed.inf.mois.implicits._
 
 
-class CarbonDynamic extends Process with VarCalc {
+class CarbonDynamic extends Process with VarCalc{
+
+  val t = Double("sim:t")
+  t annotate("description", "Simulation time")
+  t annotate("units", "hour")
+
+  val h = Double("sim:h")
+  h annotate("description", "Simulation 24-hour")
+  h annotate("units", "hour")
+
 
   /* Model inputs */
 
@@ -51,9 +61,9 @@ class CarbonDynamic extends Process with VarCalc {
 
   /* Carbon Assimilation */
 
-  val R_gc = Double("c:R_gc") default(8.314) param()
-  R_gc annotate("description", "Gas constant")
-  R_gc annotate("units", "J/Kmol")
+  val R = Double("c:R") default(8.314) param()
+  R annotate("description", "Gas constant")
+  R annotate("units", "J/Kmol")
 
   val K_c25 = Double("c:K_c25") default(40.4) param()
   K_c25 annotate("description", "Michaelis constant of carboxylation at 25C")
@@ -66,7 +76,7 @@ class CarbonDynamic extends Process with VarCalc {
   val K_c = Double("c:K_c")
   K_c annotate("description", "Michaelis constant of carboxylation")
   K_c annotate("units", "Pa")
-  calc(K_c) := K_c25 * exp((H_c * (Temperature - 25)) / (298 * R_gc * (Temperature + 273)))
+  calc(K_c) := K_c25 * exp((H_c * (Temperature - 25)) / (298 * R * (Temperature + 273)))
 
   val K_o25 = Double("c:K_o25") default(24800) param()
   K_o25 annotate("description", "Michaelis constant of oxygenation at 25C")
@@ -79,7 +89,7 @@ class CarbonDynamic extends Process with VarCalc {
   val K_o = Double("c:K_o")
   K_o annotate("description", "Michaelis constant of oxygenation")
   K_o annotate("units", "Pa")
-  calc(K_o) := K_o25 * exp((H_o * (Temperature - 25)) / (298 * R_gc * (Temperature + 273)))
+  calc(K_o) := K_o25 * exp((H_o * (Temperature - 25)) / (298 * R * (Temperature + 273)))
 
   val V_cmax25 = Double("c:V_cmax25") default(29.6875) param()
   V_cmax25 annotate("description", "Maximum carboxylation rate at 25C")
@@ -92,7 +102,7 @@ class CarbonDynamic extends Process with VarCalc {
   val V_cmax = Double("c:V_cmax")
   V_cmax annotate("description", "Maximum rate of carboxylation")
   V_cmax annotate("units", "umol/ms")
-  calc(V_cmax) := V_cmax25 * exp((H_V * (Temperature - 25)) / (298 * R_gc * (Temperature + 273)))
+  calc(V_cmax) := V_cmax25 * exp((H_V * (Temperature - 25)) / (298 * R * (Temperature + 273)))
 
 
   val O2i = Double("c:O2i") default(20500) param()
@@ -119,14 +129,14 @@ class CarbonDynamic extends Process with VarCalc {
   p4 annotate("description", "Quadratic constant of the CO2 compensation point")
   p4 annotate("units", "Pa/K^2")
 
-  val Gamma_star = Double("c:Gamma_star")
-  Gamma_star annotate("description", "CO2 compensation point in absence of mitochondrial respiration")
-  Gamma_star annotate("units", "Pa")
-  calc(Gamma_star) := p2 + (p3 * (Temperature - 25)) + (p4 * (Temperature - 25) * (Temperature - 25))
+  val Gamma* = Double("c:Gamma*")
+  Gamma* annotate("description", "CO2 compensation point in absence of mitochondrial respiration")
+  Gamma* annotate("units", "Pa")
+  calc(Gamma*) := p2 + (p3 * (Temperature - 25)) + (p4 * (Temperature - 25) * (Temperature - 25))
 
   val A_c = Double("c:A_c")
   A_c annotate("description", "Rate of assimilation limited by RuBisCO")
-  calc(A_c) := V_cmax * ((CO2i - Gamma_star) / (CO2i + (K_c * (1 + (O2i / K_o)))))
+  calc(A_c) := V_cmax * ((CO2i - Gamma*) / (CO2i + (K_c * (1 + (O2i / K_o)))))
 
 
   val H_J = Double("c:H_J") default(37000) param()
@@ -150,7 +160,7 @@ class CarbonDynamic extends Process with VarCalc {
 
   val J_max = Double("c:J_max")
   J_max annotate("description", "Potential rate of electron transport")
-  calc(J_max) := J_max25 * ((exp((H_J * (Temperature - 25)) / (298 * R_gc * (Temperature + 273))) * (1 + exp(((298 * p5) - p6) / (298 * R)))) / (1 + exp(((Temperature + 273) * p5) - p6) / ((Temperature + 273) * R)))
+  calc(J_max) := J_max25 * ((exp((H_J * (Temperature - 25)) / (298 * R * (Temperature + 273))) * (1 + exp(((298 * p5) - p6) / (298 * R)))) / (1 + exp(((Temperature + 273) * p5) - p6) / ((Temperature + 273) * R)))
 
   /* PAR left undefined in supplementary info. Assume black-body source at 5800K (i.e. sun)?
    * With no further information for now, assume PAR is equivalent to Light input. May need to update calculations later.
@@ -163,17 +173,42 @@ class CarbonDynamic extends Process with VarCalc {
   val f_spec = Double("c:f_spec") default(0.15) param()
   f_spec annotate("description", "Spectral correction factor due to absorbance of irradiance by tissues other than the chloroplast lamella")
 
-  val p7 = Double("c:p7") default(0.7) param()
+  val p7 = Double("c:p7) default(0.7) param()
   p7 annotate("description", "Curvature of electron transport in response to irradiance")
 
-  /* Can we get the simulator to solve this equation for J? */
+  /* Manually solving the quadratic function: calc(J) := (p7 * J * J) - (J_b * J) - J_c = 0 
+   * Use the larger of the two roots, or 0 if no real solution exists.
+   */
+  val J_b = Double("c:J_b") param()
+  calc(J_b) := (((PAR * (1 - f_spec)) / 2) + J_max)
+
+  val J_c = Double("c:J_c") param()
+  calc(J_c) := (((PAR * (1 - f_spec)) / 2) * J_max)
+
+  val J_discriminant = Double("c:J_discriminant") param()
+  calc(J_discriminant) := sqrt((b * b) - (4 * p7 * J_c))
+
+  val J_1 = Double("c:J_1") param()
+  calc(J_1) := ((0 - J_b) + J_discriminant) / (2 * p7)
+
+  val J_2 = Double("c:J_2") param()
+  calc(J_2) := ((0 - J_b) - J_discriminant) / (2 * p7)
+
   val J = Double("c:J")
   J annotate("description", "Rate of electron transport")
-  calc(J) := (p7 * J * J) - ((((PAR * (1 - f_spec)) / 2) + J_max) * J) - ((((PAR * (1 - f_spec)) / 2) * J_max) = 0
+  if (J_discriminant >= 0) {
+    if (J_1 >= J_2) {
+      J := J_1
+    } else {
+      J := J_2
+    }
+  } else {
+    J := 0
+  }
 
   val A_j = Double("c:A_j")
   A_j annotate("description", "Rate of assimilation limited by electron transport")
-  calc(A_j) := (J * (CO2i - Gamma_star)) / (4 * (CO2i - (2 * Gamma_star)))
+  calc(A_j) := (J * (CO2i - Gamma*)) / (4 * (CO2i - (2 * Gamma*)))
 
 
   val A_net = Double("c:A_net")
@@ -201,28 +236,25 @@ class CarbonDynamic extends Process with VarCalc {
   val ST_c = Double("c:ST_c") default(0.84) param()
   ST_c annotate("description", "Proportion of night-time starch breakdown")
 
-  /* Starch-sugar partitioning differs between day and night. Assume h%24=0-11 is daytime and h%24=12-23 is night (implicit: 12/12 photoperiod). */
+  /* Starch-sugar partitioning differs between day and night. Assume h=0-11 is daytime and h=12-23 is night (implicit: 12/12 photoperiod). */
   val StarchSynthesis = Double("c:StarchSynthesis") default(0)
   val PartitionToSugar = Double("c:PartitionToSugar") default(0)
-  val StarchDegradation = Double("c:StarchDegradatioN") default(0)
+  val StarchDegradation = Double("c:StarchDegradation") default(0)
   val StarchCarbonEOD = Double("c:StarchCarbonEOD") default(0)
   val S(t) = Double("c:S(t)") default(0)
 
-  override def step(t: Double, tau: Double) {
-    val h = ((t + tau)).floor
-
-    if (h % 24 < 12) {
-      calc(StarchSynthesis) := ST_br * CarbonAssimilation
-      calc(PartitionToSugar) := CarbonAssimilation - StarchSynthesis
-      S(t) := PartitionToSugar
-    } else {
-      if (h % 24 = 12) {
-        StarchCarbonEOD := StarchCarbon
-      }
-      calc(StarchDegradation) := (ST_c * StarchCarbonEOD) / 12
-      S(t) := StarchDegradation
+  if (h < 12) {
+    calc(StarchSynthesis) := ST_br * CarbonAssimilation
+    calc(PartitionToSugar) := CarbonAssimilation - StarchSynthesis
+    S(t) := PartitionToSugar
+  } else {
+    if (h = 12) {
+      StarchCarbonEOD := StarchCarbon
     }
+    calc(StarchDegradation := (ST_c * StarchCarbonEOD) / 12
+    S(t) := StarchDegradation
   }
+
 
   val p8 = Double("c:p8") default(0.085) param()
   p8 annotate("description", "Leaf respiration per unit sucrose")
@@ -242,7 +274,7 @@ class CarbonDynamic extends Process with VarCalc {
 
   val R_t = Double("c:R_t")
   R_t annotate("description", "Leaf maintenance respiration per unit area")
-  calc(R_t) := R_t20 * exp((H_r * (Temperature - 20)) / (293 * R_gc * (Temperature + 273)))
+  calc(R_t) := R_t20 * exp((H_r * (Temperature - 20)) / (293 * R * (Temperature + 273)))
 
   val R_above = Double("c:R_above")
   R_above annotate("description", "Total leaf maintenance respiration")
@@ -298,7 +330,7 @@ class CarbonDynamic extends Process with VarCalc {
   d_RL annotate("description", "Required leaf growth respiration")
   calc(d_RL) := (d_L * alpha) / (1 - alpha)
 
-  /* Replaced by RS from FSPM!!
+  /* Replaced by RS from FSPM!! */
    * val RS = Double("c:RS") default(0.12)
    * RS annotate("description", "Root-to-shoot allocation ratio")
    * if (RosetteArea < 0.000122) {
@@ -329,7 +361,7 @@ class CarbonDynamic extends Process with VarCalc {
   val R_ml = Double("c:R_ml")
   R_ml annotate("description", "Leaf growth respiration")
 
-  val R = Double("c:R")
+  val R = Double("c:R)
   R annotate("description", "Root growth")
 
   val R_mr = Double("c:R_mr")
@@ -347,9 +379,15 @@ class CarbonDynamic extends Process with VarCalc {
     R_mr := (d_RR / D_C) * Q_C
   }
 
-  /* Q_C - D_C during daytime, 0 otherwise. How to access time? */
+
   val O_sta = Double("c:O_sta") default(0)
   O_sta annotate("description", "Overflow transferring excess carbon to starch pool")
+
+  if (h < 12) {
+    calc(O_sta) := Q_C - D_C
+  } else {
+    O_sta := 0
+  }
 
 
   LeafCarbon := LeafCarbon + L - TransL

@@ -129,14 +129,14 @@ class CarbonDynamic extends Process with VarCalc{
   p4 annotate("description", "Quadratic constant of the CO2 compensation point")
   p4 annotate("units", "Pa/K^2")
 
-  val Gamma* = Double("c:Gamma*")
-  Gamma* annotate("description", "CO2 compensation point in absence of mitochondrial respiration")
-  Gamma* annotate("units", "Pa")
-  calc(Gamma*) := p2 + (p3 * (Temperature - 25)) + (p4 * (Temperature - 25) * (Temperature - 25))
+  val Gamma_star = Double("c:Gamma_star")
+  Gamma_star annotate("description", "CO2 compensation point in absence of mitochondrial respiration")
+  Gamma_star annotate("units", "Pa")
+  calc(Gamma_star) := p2 + (p3 * (Temperature - 25)) + (p4 * (Temperature - 25) * (Temperature - 25))
 
   val A_c = Double("c:A_c")
   A_c annotate("description", "Rate of assimilation limited by RuBisCO")
-  calc(A_c) := V_cmax * ((CO2i - Gamma*) / (CO2i + (K_c * (1 + (O2i / K_o)))))
+  calc(A_c) := V_cmax * ((CO2i - Gamma_star) / (CO2i + (K_c * (1 + (O2i / K_o)))))
 
 
   val H_J = Double("c:H_J") default(37000) param()
@@ -173,7 +173,7 @@ class CarbonDynamic extends Process with VarCalc{
   val f_spec = Double("c:f_spec") default(0.15) param()
   f_spec annotate("description", "Spectral correction factor due to absorbance of irradiance by tissues other than the chloroplast lamella")
 
-  val p7 = Double("c:p7) default(0.7) param()
+  val p7 = Double("c:p7") default(0.7) param()
   p7 annotate("description", "Curvature of electron transport in response to irradiance")
 
   /* Manually solving the quadratic function: calc(J) := (p7 * J * J) - (J_b * J) - J_c = 0 
@@ -186,7 +186,7 @@ class CarbonDynamic extends Process with VarCalc{
   calc(J_c) := (((PAR * (1 - f_spec)) / 2) * J_max)
 
   val J_discriminant = Double("c:J_discriminant") param()
-  calc(J_discriminant) := sqrt((b * b) - (4 * p7 * J_c))
+  calc(J_discriminant) := sqrt((J_b * J_b) - (4 * p7 * J_c))
 
   val J_1 = Double("c:J_1") param()
   calc(J_1) := ((0 - J_b) + J_discriminant) / (2 * p7)
@@ -208,11 +208,11 @@ class CarbonDynamic extends Process with VarCalc{
 
   val A_j = Double("c:A_j")
   A_j annotate("description", "Rate of assimilation limited by electron transport")
-  calc(A_j) := (J * (CO2i - Gamma*)) / (4 * (CO2i - (2 * Gamma*)))
+  calc(A_j) := (J * (CO2i - Gamma_star)) / (4 * (CO2i - (2 * Gamma_star)))
 
 
   val A_net = Double("c:A_net")
-  if (J = no solution) {
+  if (J == 0) {
     A_net := A_c
   } else {
     A_net := min(A_c, A_j)
@@ -241,18 +241,18 @@ class CarbonDynamic extends Process with VarCalc{
   val PartitionToSugar = Double("c:PartitionToSugar") default(0)
   val StarchDegradation = Double("c:StarchDegradation") default(0)
   val StarchCarbonEOD = Double("c:StarchCarbonEOD") default(0)
-  val S(t) = Double("c:S(t)") default(0)
+  val St = Double("c:St") default(0)
 
   if (h < 12) {
     calc(StarchSynthesis) := ST_br * CarbonAssimilation
     calc(PartitionToSugar) := CarbonAssimilation - StarchSynthesis
-    S(t) := PartitionToSugar
+    St := PartitionToSugar
   } else {
-    if (h = 12) {
+    if (h == 12) {
       StarchCarbonEOD := StarchCarbon
     }
-    calc(StarchDegradation := (ST_c * StarchCarbonEOD) / 12
-    S(t) := StarchDegradation
+    calc(StarchDegradation) := (ST_c * StarchCarbonEOD) / 12
+    St := StarchDegradation
   }
 
 
@@ -287,7 +287,7 @@ class CarbonDynamic extends Process with VarCalc{
 
   val Q_trans = Double("c:Q_trans")
   Q_trans annotate("description", "Transient carbon available for growth")
-  calc(Q_trans) := SugarCarbon + S(t) - R_above - R_below
+  calc(Q_trans) := SugarCarbon + St - R_above - R_below
 
   val SSU_min = Double("c:SSU_min") default(0.05) param()
   SSU_min annotate("description", "Minimum sugar content in the leaves")
@@ -330,7 +330,8 @@ class CarbonDynamic extends Process with VarCalc{
   d_RL annotate("description", "Required leaf growth respiration")
   calc(d_RL) := (d_L * alpha) / (1 - alpha)
 
-  /* Replaced by RS from FSPM!! */
+  /* Replaced by RS from FSPM!!
+   *
    * val RS = Double("c:RS") default(0.12)
    * RS annotate("description", "Root-to-shoot allocation ratio")
    * if (RosetteArea < 0.000122) {
@@ -355,27 +356,27 @@ class CarbonDynamic extends Process with VarCalc{
   calc(D_C) := d_L + d_RL + d_R + d_RR
 
 
-  val L = Double("c:L")
-  L annotate("description", "Leaf growth")
+  val LG = Double("c:L")
+  LG annotate("description", "Leaf growth")
 
   val R_ml = Double("c:R_ml")
   R_ml annotate("description", "Leaf growth respiration")
 
-  val R = Double("c:R)
-  R annotate("description", "Root growth")
+  val RG = Double("c:R")
+  RG annotate("description", "Root growth")
 
   val R_mr = Double("c:R_mr")
   R_mr annotate("description", "Root growth respiration")
 
   if (D_C <= Q_C) {
-    L := d_L
+    LG := d_L
     R_ml := d_RL
-    R := d_R
+    RG := d_R
     R_mr := d_RR
   } else {
-    L := (d_L / D_C) * Q_C
+    LG := (d_L / D_C) * Q_C
     R_ml := (d_RL / D_C) * Q_C
-    R := (d_R / D_C) * Q_C
+    RG := (d_R / D_C) * Q_C
     R_mr := (d_RR / D_C) * Q_C
   }
 
@@ -390,9 +391,9 @@ class CarbonDynamic extends Process with VarCalc{
   }
 
 
-  LeafCarbon := LeafCarbon + L - TransL
-  RootCarbon := RootCarbon + R - TransR
+  LeafCarbon := LeafCarbon + LG - TransL
+  RootCarbon := RootCarbon + RG - TransR
   StarchCarbon := StarchCarbon + StarchSynthesis - StarchDegradation + O_sta
-  SugarCarbon := SugarCarbon + S(t) - R_above - R_below - R_ml - R_mr - O_sta - L - R + TransL + TransR
+  SugarCarbon := SugarCarbon + St - R_above - R_below - R_ml - R_mr - O_sta - LG - RG + TransL + TransR
 
 }

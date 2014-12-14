@@ -60,8 +60,8 @@ class InputTSV extends CsvTimeSeries("input.tsv", time="ex:h") with VarCalc{
   T_b annotate("description", "Base temperature value")
 
   val Thermaltime = Double("c:Thermaltime")
-  Temperature annotate("description", "Thermal time unit per hour")
-  Temperature annotate("units", "Cd")
-  calc(Thermaltime) := Temperature - T_b) / 24
+  Thermaltime annotate("description", "Thermal time unit per hour")
+  Thermaltime annotate("units", "Cd")
+  calc(Thermaltime) := (Temperature - T_b) / 24
 
 }

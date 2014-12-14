@@ -25,7 +25,7 @@ import spire.implicits._
 import uk.ac.ed.inf.mois.implicits._
 
 
-class FunctionalStructural extends Process {
+class FunctionalStructural extends Process with VarCalc{
 
   val t = Double("sim:t")
   t annotate("description", "Simulation time")
@@ -54,8 +54,8 @@ class FunctionalStructural extends Process {
   val LeafCarbon = Double("c:LeafCarbon")
   val RootCarbon = Double("c:RootCarbon")
 
-  val L = Double("c:L")
-  L annotate("description", "Leaf growth")
+  val LG = Double("c:L")
+  LG annotate("description", "Leaf growth")
 
 
   /* Leaf object */
@@ -85,7 +85,7 @@ class FunctionalStructural extends Process {
   }
 
   /* A population of these Leaf objects */
-  val Leaves = mutable.ArrayBuffer.empty[Leaf]
+  val Leaves = scala.collection.mutable.ArrayBuffer.empty[Leaf]
 
 
   /* Functional Structural Plant
@@ -102,34 +102,34 @@ class FunctionalStructural extends Process {
   LateVegetativeStageGrowth annotate("units", "Cd")
 
   val Total_Cd = Double("c:Total_Cd") default(0)
-  Total_Cd("description", "Accumulated degree days")
-  Total_Cd("units", "Cd")
+  Total_Cd annotate("description", "Accumulated degree days")
+  Total_Cd annotate("units", "Cd")
   calc(Total_Cd) := Total_Cd + Thermaltime
 
 
-  val j = Double("c:j") default(0)
+  val j = Int("c:j") default(0)
   j annotate("description", "Number of completed growth cycles")
 
-  val j_prov = Double("c:j_prov") param()
+  val j_prov = Int("c:j_prov") param()
 
-  val NumberOfLeaves = Double("c:NumberOfLeaves") default(0)
+  val NumberOfLeaves = Int("c:NumberOfLeaves") default(0)
 
   /* Initialise cotelydons if j=0, else spawn new leaf if appropriate stage in growth */
   if (Total_Cd < LateVegetativeStageSwitchThreshold) {
     calc(j_prov) := floor(Total_Cd / EarlyVegetativeStageGrowth)
-    if (j = 0) {
+    if (j == 0) {
       Leaves.append(new Leaf(1))
       Leaves.append(new Leaf(2))
       j := 1
       NumberOfLeaves := 2
-    } else if (j_prov = j + 1) {
+    } else if (j_prov == j + 1) {
       Leaves.append(new Leaf(NumberOfLeaves + 1))
       j := j_prov
       NumberOfLeaves := j + 1
     }
   } else {
     calc(j_prov) := floor(LateVegetativeStageSwitchThreshold / EarlyVegetativeStageGrowth) + floor((Total_Cd - LateVegetativeStageSwitchThreshold) / LateVegetativeStageGrowth)
-    if (j_prov = j + 1) {
+    if (j_prov == j + 1) {
       Leaves.append(new Leaf(NumberOfLeaves + 1))
       j := j_prov
       NumberOfLeaves := j + 1
@@ -210,11 +210,11 @@ class FunctionalStructural extends Process {
   /* Update leaf size based on trophic competition */
   for (Leaf <- Leaves) {
     /* Does 'total increment in shoot dry mass' = LeafGrowth? */
-    calc(delta_q) := (Leaf.d / sumd_l) * L
+    calc(delta_q) := (Leaf.d / sumd_l) * LG
     Leaf.add_age(Thermaltime)
     Leaf.add_weight(delta_q)
 
-    calc(SLA) := 0.144 exp(-0.002 * Total_Cd)
+    calc(SLA) := 0.144 * exp(-0.002 * Total_Cd)
     /* Leaf area does not shrink in later time points. */
     if (Leaf.area < SLA) {
       Leaf.area := SLA
@@ -234,12 +234,16 @@ class FunctionalStructural extends Process {
       Leaf.a := 10
     } else {
       Leaf.a := 10 + (60 * (Leaf.rln - i_max) / (NumberOfLeaves - i_max))
+    }
   }
 
 
-  /* Still need to calculate 13 largest functional leaves for RosetteArea.
-   * Looks like formula (3.23, on page 25) looks for maximum leaf area * zenithal angle of 13 consecutive leaves.
-   */
-  calc(RosetteArea)
+  /* Calculate 13 largest functional leaves for RosetteArea. */
+  calc(RosetteArea) :=
+    (0 until (NumberOfLeaves-12)).map { k =>
+      (0 until 12).map { leaf =>
+        leaf.size * cos(leaf.angle)
+      }.sum
+    }.max
 
 }

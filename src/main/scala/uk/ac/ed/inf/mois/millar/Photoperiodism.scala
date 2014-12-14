@@ -25,7 +25,7 @@ import spire.implicits._
 import uk.ac.ed.inf.mois.implicits._
 
 
-class Photoperiodism extends ODE {
+class Photoperiodism extends ODE with VarCalc{
 
   val t = Double("sim:t")
   t annotate("description", "Simulation time")
@@ -339,8 +339,8 @@ class Photoperiodism extends ODE {
   d(Y_c) := (v44 * Y) - (v45 * Y_c) + (v46 * Y_n) - ((v47 * Y_c) / (v48 + Y_c))
   d(Y_n) := (v45 * Y_c) - (v45 * Y_n) - ((v49 * Y_n) / (v50 + Y_n))
 
-  d(CO) := (V_COm * TOC1_n) - (((1 - Theta_light) * V_COp * CO) / (k_COp + CO))
-  d(FT) := B_CO + ((V_CO * CO) / (K_CO + CO)) - ((V_FT * FT) / (k_FT + FT))
+  d(CO) := (v_COm * TOC1_n) - (((1 - Theta_light) * v_COp * CO) / (k_COp + CO))
+  d(FT) := B_CO + ((V_CO * CO) / (K_CO + CO)) - ((v_FT * FT) / (k_FT + FT))
 
 
   /* This value needs to keep track of the total amount of FT accumulated over the previous 24 hours from the hour at hand.
@@ -358,21 +358,17 @@ class Photoperiodism extends ODE {
 
 class CircularBuffer[T](size: Int)(implicit mf: Manifest[T]) {
 
-    private val arr = new scala.collection.mutable.Array[T]()
+    private val arr = new Array[T](size)
 
     private var cursor = 0
 
     def push(value: T) {
-      try {
-        arr(cursor) = value
-        cursor += 1
-        cursor %= size
-      }
+      arr(cursor) = value
+      cursor += 1
+      cursor %= size
     }
 
-    def sumAll: [T] = {
-      try {
-        arr.sum
-      }
+    def sumAll: T = {
+      arr.sum
     }
   }

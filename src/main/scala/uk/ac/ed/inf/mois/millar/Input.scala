@@ -24,7 +24,7 @@ import spire.implicits._
 import uk.ac.ed.inf.mois.implicits._
 
 
-class Input extends Process {
+class Input extends Process with VarCalc{
 
   /* Input data required: hourly light intensity, carbon dioxide level, and temperature.
    * Simulated 12h light, 12h dark cycles.
@@ -51,8 +51,8 @@ class Input extends Process {
   T_b annotate("description", "Base temperature value")
 
   val Thermaltime = Double("c:Thermaltime")
-  Temperature annotate("description", "Thermal time unit per hour")
-  Temperature annotate("units", "Cd")
+  Thermaltime annotate("description", "Thermal time unit per hour")
+  Thermaltime annotate("units", "Cd")
 
 
   override def step(t: Double, tau: Double) {

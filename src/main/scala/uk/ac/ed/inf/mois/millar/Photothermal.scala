@@ -25,7 +25,7 @@ import spire.implicits._
 import uk.ac.ed.inf.mois.implicits._
 
 
-class Photothermal extends Process {
+class Photothermal extends Process with VarCalc {
 
   val t = Double("sim:t")
   t annotate("description", "Simulation time")
@@ -38,12 +38,16 @@ class Photothermal extends Process {
 
   /* Model inputs */
 
+  val Temperature = Double("c:Temperature")
+  Temperature annotate("description", "Hourly temperature")
+  Temperature annotate("units", "C")
+
   val T_b = Double("c:T_b") default(3) param()
   T_b annotate("description", "Base temperature value")
 
   val Thermaltime = Double("c:Thermaltime")
-  Temperature annotate("description", "Thermal time unit per hour")
-  Temperature annotate("units", "Cd")
+  Thermaltime annotate("description", "Thermal time unit per hour")
+  Thermaltime annotate("units", "Cd")
 
 
   /* Inputs from PPM - need to work out how FTarea is calculated there... */

@@ -18,8 +18,9 @@
 
 package uk.ac.ed.inf.mois.millar
 
-import uk.ac.ed.inf.mois.{Model, ODE, Process, ProcessGroup, VarCalc, Math}
+import uk.ac.ed.inf.mois.{Model, ODE, Process, ProcessGroup, VarCalc, Math, CsvTimeSeries}
 import uk.ac.ed.inf.mois.sched.NaiveScheduler
+import uk.ac.ed.inf.mois.sched.CompositionScheduler
 import scala.math
 import spire.implicits._
 import uk.ac.ed.inf.mois.implicits._
@@ -38,7 +39,7 @@ class InputTSV extends CsvTimeSeries("input.tsv", time="ex:h") with VarCalc{
   val h = Double("ex:h")
   h annotate("description", "Simulation 24-hour")
   h annotate("units", "hour")
-  calc(h) := floor(t) % 24
+  calc(h) := Math.floor(t) % 24
 
   val Light = Double("c:Light")
   Light annotate("description", "Hourly light intensity")

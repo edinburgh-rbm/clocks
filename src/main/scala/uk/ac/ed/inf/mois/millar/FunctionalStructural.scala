@@ -116,7 +116,7 @@ class FunctionalStructural extends Process with VarCalc{
 
   /* Initialise cotelydons if j=0, else spawn new leaf if appropriate stage in growth */
   if (Total_Cd < LateVegetativeStageSwitchThreshold) {
-    calc(j_prov) := floor(Total_Cd / EarlyVegetativeStageGrowth)
+    calc(j_prov) := Math.floor(Total_Cd / EarlyVegetativeStageGrowth).toInt
     if (j == 0) {
       Leaves.append(new Leaf(1))
       Leaves.append(new Leaf(2))
@@ -128,7 +128,7 @@ class FunctionalStructural extends Process with VarCalc{
       NumberOfLeaves := j + 1
     }
   } else {
-    calc(j_prov) := floor(LateVegetativeStageSwitchThreshold / EarlyVegetativeStageGrowth) + floor((Total_Cd - LateVegetativeStageSwitchThreshold) / LateVegetativeStageGrowth)
+    calc(j_prov) := Math.floor(LateVegetativeStageSwitchThreshold / EarlyVegetativeStageGrowth).toInt + Math.floor((Total_Cd - LateVegetativeStageSwitchThreshold) / LateVegetativeStageGrowth).toInt
     if (j_prov == j + 1) {
       Leaves.append(new Leaf(NumberOfLeaves + 1))
       j := j_prov
@@ -214,7 +214,7 @@ class FunctionalStructural extends Process with VarCalc{
     Leaf.add_age(Thermaltime)
     Leaf.add_weight(delta_q)
 
-    calc(SLA) := 0.144 * exp(-0.002 * Total_Cd)
+    calc(SLA) := 0.144 * Math.exp(-0.002 * Total_Cd)
     /* Leaf area does not shrink in later time points. */
     if (Leaf.area < SLA) {
       Leaf.area := SLA
@@ -242,7 +242,7 @@ class FunctionalStructural extends Process with VarCalc{
   calc(RosetteArea) :=
     (0 until (NumberOfLeaves-12)).map { k =>
       (0 until 12).map { leaf =>
-        leaf.size * cos(leaf.angle)
+        leaf.size * Math.cos(leaf.angle)
       }.sum
     }.max
 

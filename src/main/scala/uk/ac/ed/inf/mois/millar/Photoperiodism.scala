@@ -318,7 +318,7 @@ class Photoperiodism extends ODE with VarCalc{
 
   /* Assume 12-hour photoperiod, with sunrise at h=0 and sunset at h=12. */
   val Theta_light = Double("c:Theta_light")
-  calc(Theta_light) := (1/4) * (1 + tanh(6 * (h - 0))) * (1 - tanh(6 * (h - DaylightHours)))
+  calc(Theta_light) := (1/4) * (1 + Math.tanh(6 * (h - 0))) * (1 - Math.tanh(6 * (h - DaylightHours)))
   
 
   d(P) := (0.5 * (1 - Theta_light)) - (P * Theta_light) - ((1.2 * P) / (1.2 + P))

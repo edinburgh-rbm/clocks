@@ -132,7 +132,7 @@ class Photothermal extends Process with VarCalc {
 
   val V_e = Double("c:V_e")
   V_e annotate("description", "Vernalisation effectiveness")
-  calc(V_e) := exp(Kappa) * ((Temperature - T_Vmin) ** Omega) * ((T_Vmax - Temperature) ** Epsilon)
+  calc(V_e) := Math.exp(Kappa) * ((Temperature - T_Vmin) ** Omega) * ((T_Vmax - Temperature) ** Epsilon)
 
   /* Need to verify this */
   val V_h = Double("c:V_h") default(0)

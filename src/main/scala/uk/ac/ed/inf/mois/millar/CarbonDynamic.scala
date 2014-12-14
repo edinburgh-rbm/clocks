@@ -76,7 +76,7 @@ class CarbonDynamic extends Process with VarCalc{
   val K_c = Double("c:K_c")
   K_c annotate("description", "Michaelis constant of carboxylation")
   K_c annotate("units", "Pa")
-  calc(K_c) := K_c25 * exp((H_c * (Temperature - 25)) / (298 * R * (Temperature + 273)))
+  calc(K_c) := K_c25 * Math.exp((H_c * (Temperature - 25)) / (298 * R * (Temperature + 273)))
 
   val K_o25 = Double("c:K_o25") default(24800) param()
   K_o25 annotate("description", "Michaelis constant of oxygenation at 25C")
@@ -89,7 +89,7 @@ class CarbonDynamic extends Process with VarCalc{
   val K_o = Double("c:K_o")
   K_o annotate("description", "Michaelis constant of oxygenation")
   K_o annotate("units", "Pa")
-  calc(K_o) := K_o25 * exp((H_o * (Temperature - 25)) / (298 * R * (Temperature + 273)))
+  calc(K_o) := K_o25 * Math.exp((H_o * (Temperature - 25)) / (298 * R * (Temperature + 273)))
 
   val V_cmax25 = Double("c:V_cmax25") default(29.6875) param()
   V_cmax25 annotate("description", "Maximum carboxylation rate at 25C")
@@ -102,7 +102,7 @@ class CarbonDynamic extends Process with VarCalc{
   val V_cmax = Double("c:V_cmax")
   V_cmax annotate("description", "Maximum rate of carboxylation")
   V_cmax annotate("units", "umol/ms")
-  calc(V_cmax) := V_cmax25 * exp((H_V * (Temperature - 25)) / (298 * R * (Temperature + 273)))
+  calc(V_cmax) := V_cmax25 * Math.exp((H_V * (Temperature - 25)) / (298 * R * (Temperature + 273)))
 
 
   val O2i = Double("c:O2i") default(20500) param()
@@ -160,7 +160,7 @@ class CarbonDynamic extends Process with VarCalc{
 
   val J_max = Double("c:J_max")
   J_max annotate("description", "Potential rate of electron transport")
-  calc(J_max) := J_max25 * ((exp((H_J * (Temperature - 25)) / (298 * R * (Temperature + 273))) * (1 + exp(((298 * p5) - p6) / (298 * R)))) / (1 + exp(((Temperature + 273) * p5) - p6) / ((Temperature + 273) * R)))
+  calc(J_max) := J_max25 * ((Math.exp((H_J * (Temperature - 25)) / (298 * R * (Temperature + 273))) * (1 + Math.exp(((298 * p5) - p6) / (298 * R)))) / (1 + Math.exp(((Temperature + 273) * p5) - p6) / ((Temperature + 273) * R)))
 
   /* PAR left undefined in supplementary info. Assume black-body source at 5800K (i.e. sun)?
    * With no further information for now, assume PAR is equivalent to Light input. May need to update calculations later.
@@ -186,7 +186,7 @@ class CarbonDynamic extends Process with VarCalc{
   calc(J_c) := (((PAR * (1 - f_spec)) / 2) * J_max)
 
   val J_discriminant = Double("c:J_discriminant") param()
-  calc(J_discriminant) := sqrt((J_b * J_b) - (4 * p7 * J_c))
+  calc(J_discriminant) := Math.sqrt((J_b * J_b) - (4 * p7 * J_c))
 
   val J_1 = Double("c:J_1") param()
   calc(J_1) := ((0 - J_b) + J_discriminant) / (2 * p7)
@@ -215,7 +215,7 @@ class CarbonDynamic extends Process with VarCalc{
   if (J == 0) {
     A_net := A_c
   } else {
-    A_net := min(A_c, A_j)
+    A_net := Math.min(A_c, A_j)
   }
 
   val CarbonAssimilation = Double("c:CarbonAssimilation")
@@ -274,7 +274,7 @@ class CarbonDynamic extends Process with VarCalc{
 
   val R_t = Double("c:R_t")
   R_t annotate("description", "Leaf maintenance respiration per unit area")
-  calc(R_t) := R_t20 * exp((H_r * (Temperature - 20)) / (293 * R * (Temperature + 273)))
+  calc(R_t) := R_t20 * Math.exp((H_r * (Temperature - 20)) / (293 * R * (Temperature + 273)))
 
   val R_above = Double("c:R_above")
   R_above annotate("description", "Total leaf maintenance respiration")

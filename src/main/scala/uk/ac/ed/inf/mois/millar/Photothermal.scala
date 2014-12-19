@@ -90,7 +90,7 @@ class Photothermal extends Process with VarCalc {
   val n = Double("c:n") default(7) param()
 
   val Photoperiod = Double("c:Photoperiod")
-  calc(Photoperiod) := A + (B * ((C ** n) / ((C ** n) + (FTarea ** n))))
+  calc(Photoperiod) := A + (B * ((Math.pow(C, n)) / ((Math.pow(C, n)) + (Math.pow(FTarea, n)))))
 
 
   /* Thermal */

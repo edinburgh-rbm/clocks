@@ -323,19 +323,19 @@ class Photoperiodism extends ODE with VarCalc{
 
   d(P) := (0.5 * (1 - Theta_light)) - (P * Theta_light) - ((1.2 * P) / (1.2 + P))
 
-  d(LHY) := (Theta_light * v1 * P) + ((v2 * (X_c ** u1)) / (v3 + (X_c ** u1))) - ((v4 * LHY) / (v5 + LHY))
+  d(LHY) := (Theta_light * v1 * P) + ((v2 * (Math.pow(X_c, u1))) / (v3 + (Math.pow(X_c, u1)))) - ((v4 * LHY) / (v5 + LHY))
   d(LHY_c) := (v6 * LHY) - (v7 * LHY_c) + (v8 * LHY_n) - ((v9 * LHY_c) / (v10 + LHY_c))
   d(LHY_n) := (v7 * LHY_c) - (v8 * LHY_n) - ((v11 * LHY_n) / (v12 + LHY_n))
 
-  d(TOC1) := (((v13 * (Y_n ** u2)) / (v14 + (Y_n ** u2))) * (v15 / (v16 + (Y_n ** u2)))) - ((v17 * TOC1) / (v18 + TOC1))
+  d(TOC1) := (((v13 * (Math.pow(Y_n, u2))) / (v14 + (Math.pow(Y_n, u2)))) * (v15 / (v16 + (Math.pow(Y_n, u2))))) - ((v17 * TOC1) / (v18 + TOC1))
   d(TOC1_c) := (v19 * TOC1) - (v20 * TOC1_c) + (v21 * TOC1_n) - ((((v22 * (1 - Theta_light)) + v23) * TOC1_c) / (v24 + TOC1_c))
   d(TOC1_n) := (v20 * TOC1_c) - (v21 * TOC1_n) - ((((v25 * (1 - Theta_light)) + v26) * TOC1_n) / (v27 + TOC1_n))
 
-  d(X) := ((v28 * (TOC1_n ** u3)) / (v29 + (TOC1_n ** u3))) - ((v30 * X) / (v31 + X))
+  d(X) := ((v28 * (Math.pow(TOC1_n, u3))) / (v29 + (Math.pow(TOC1_n, u3)))) - ((v30 * X) / (v31 + X))
   d(X_c) := (v32 * X) - (v33 * X_c) + (v34 * X_n) - ((v35 * X_c) / (v36 + X_c))
   d(X_n) := (v33 * X_c) - (v34 * X_n) - ((v37 * X_n) / (v38 +  X_n))
 
-  d(Y) := ((Theta_light * v53 * P + (((Theta_light * v39) + v40) / (v41 + (TOC1_n ** u4)))) * (v51 / ((LHY_n ** u5) + v52))) - ((v42 * Y) / (v43 + Y))
+  d(Y) := ((Theta_light * v53 * P + (((Theta_light * v39) + v40) / (v41 + (Math.pow(TOC1_n, u4))))) * (v51 / (Math.pow(LHY_n, u5) + v52))) - ((v42 * Y) / (v43 + Y))
   d(Y_c) := (v44 * Y) - (v45 * Y_c) + (v46 * Y_n) - ((v47 * Y_c) / (v48 + Y_c))
   d(Y_n) := (v45 * Y_c) - (v45 * Y_n) - ((v49 * Y_n) / (v50 + Y_n))
 
@@ -356,7 +356,7 @@ class Photoperiodism extends ODE with VarCalc{
 
 }
 
-class CircularBuffer[T](size: Int)(implicit mf: Manifest[T]) {
+class CircularBuffer[T](size: Int)(implicit mf: Manifest[T], num: Numeric[T]) {
 
     private val arr = new Array[T](size)
 

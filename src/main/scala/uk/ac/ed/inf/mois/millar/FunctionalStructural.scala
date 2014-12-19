@@ -70,9 +70,9 @@ class FunctionalStructural extends Process with VarCalc{
     /* Zenithal angle of leaf */
     var a: Double = 70
     /* Leaf demand */
-    var d: Double
+    var d: Double = 0
     /* Leaf area */
-    var area: Double
+    var area: Double = 0
 
     def add_age(dn: Double) {
       n = n + dn
@@ -147,10 +147,12 @@ class FunctionalStructural extends Process with VarCalc{
   val a_r = Double("c:a_r") default(13.03) param()
   val b_r = Double("c:b_r") default(9.58) param()
 
-  /* Needs to be normalised to its maximal value M */
+  val M_r = Double("c:M_r") default(0.195691) param()
+
+  /* Needs to be normalised to its maximal value M_r */
   val f_r = Double("c:f_r") param()
   f_r annotate("description", "Root sink variation")
-  calc(f_r) := (1 / M) * (((Total_Cd + 0.5) / T_r) ** (1 / a_r)) * ((1 - ((Total_Cd + 0.5) / T_r)) ** (1 / b_r))
+  calc(f_r) := (1 / M_r) * (((Total_Cd + 0.5) / T_r) ** (1 / a_r)) * ((1 - ((Total_Cd + 0.5) / T_r)) ** (1 / b_r))
 
   val d_r = Double("c:d_r")
   d_r annotate("description", "Root demand")
@@ -167,6 +169,7 @@ class FunctionalStructural extends Process with VarCalc{
 
   val a_l = Double("c:a_l") default(3.07) param()
   val b_l = Double("c:b_l") default(5.59) param()
+  val M_l = Double("c:M_l") default(0.406873) param()
 
   /* Needs to be normalised to its maximal value M */
   val f_l = Double("c:f_r") param()
@@ -180,9 +183,9 @@ class FunctionalStructural extends Process with VarCalc{
 
   /* For each Leaf in Leaves calculate its demand and add to sumd_l */
   for (Leaf <- Leaves) {
-    calc(f_l) := (1 / M) * (((Leaf.n + 0.5) / T_l) ** (1 / a_l)) * ((1 - ((Leaf.n + 0.5) / T_l)) ** (1 / b_l))
+    calc(f_l) := (1 / M_l) * (((Leaf.n + 0.5) / T_l) ** (1 / a_l)) * ((1 - ((Leaf.n + 0.5) / T_l)) ** (1 / b_l))
     calc(d_l) := P_l * f_l
-    Leaf.d := d_l
+    Leaf.d = d_l
     calc(sumd_l) := sumd_l + d_l
   }
 
@@ -217,7 +220,7 @@ class FunctionalStructural extends Process with VarCalc{
     calc(SLA) := 0.144 * Math.exp(-0.002 * Total_Cd)
     /* Leaf area does not shrink in later time points. */
     if (Leaf.area < SLA) {
-      Leaf.area := SLA
+      Leaf.area = SLA
     }
 
     /* Find largest leaf */
@@ -231,19 +234,33 @@ class FunctionalStructural extends Process with VarCalc{
   /* Update leaf zenithal angle */
   for (Leaf <- Leaves) {
     if (Leaf.rln <= i_max) {
-      Leaf.a := 10
+      Leaf.a = 10
     } else {
-      Leaf.a := 10 + (60 * (Leaf.rln - i_max) / (NumberOfLeaves - i_max))
+      Leaf.a = 10 + (60 * (Leaf.rln - i_max) / (NumberOfLeaves - i_max))
     }
   }
 
 
   /* Calculate 13 largest functional leaves for RosetteArea. */
-  calc(RosetteArea) :=
-    (0 until (NumberOfLeaves-12)).map { k =>
-      (0 until 12).map { leaf =>
-        leaf.size * Math.cos(leaf.angle)
-      }.sum
-    }.max
+
+  val x = Double("temp:x") default(0)
+
+  calc(RosetteArea) := 0
+  for (Leaf <- Leaves) {
+    calc(x) := 0
+    for (k <- 0 to 12) {
+      calc(x) := x + (Leaf.area * Math.cos(Leaf.a))
+    }
+    if (x > RosetteArea) {
+      calc(RosetteArea) := x
+    }
+  }
+
+  /*  (0 until (NumberOfLeaves-12)).map { k =>
+   *    (0 until 12).map { leaf =>
+   *      (leaf.area * Math.cos(leaf.a))
+   *    }.sum
+   *  }.max
+   */
 
 }

@@ -26,7 +26,7 @@ import spire.implicits._
 import uk.ac.ed.inf.mois.implicits._
 
 
-class InputTSV extends CsvTimeSeries("input.tsv", time="ex:h") with VarCalc{
+class InputTSV extends CsvTimeSeries[Double]("input.tsv", time="ex:h") with VarCalc{
 
   /* Input data required: hourly light intensity, carbon dioxide level, and temperature.
    * Simulated 12h light, 12h dark cycles.

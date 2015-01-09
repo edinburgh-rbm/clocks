@@ -18,7 +18,8 @@
 
 package uk.ac.ed.inf.mois.millar
 
-import uk.ac.ed.inf.mois.{Model, ODE, Process, ProcessGroup, VarCalc, Math}
+import uk.ac.ed.inf.mois.{Model, Process, ProcessGroup, VarCalc, Math}
+import uk.ac.ed.inf.mois.ode
 import uk.ac.ed.inf.mois.sched.NaiveScheduler
 import scala.math
 import spire.implicits._

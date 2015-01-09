@@ -18,14 +18,15 @@
 
 package uk.ac.ed.inf.mois.forgerpeskin
 
-import uk.ac.ed.inf.mois.{Model, ODE, Process, ProcessGroup, VarCalc, Math}
+import uk.ac.ed.inf.mois.{Model, Process, ProcessGroup, VarCalc, Math}
+import uk.ac.ed.inf.mois.ode.Apache
 import uk.ac.ed.inf.mois.sched.NaiveScheduler
 import uk.ac.ed.inf.mois.reaction.DeterministicReactionNetwork
 import spire.implicits._
 import uk.ac.ed.inf.mois.implicits._
 
 
-class MCCPrimaryDPNAlt extends DeterministicReactionNetwork with VarCalc {
+class MCCPrimaryDPNAlt extends DeterministicReactionNetwork[Double, Double] with Apache with VarCalc {
 
   /* Global variables */
 

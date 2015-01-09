@@ -18,14 +18,15 @@
 
 package uk.ac.ed.inf.mois.millar
 
-import uk.ac.ed.inf.mois.{Model, ODE, Process, ProcessGroup, VarCalc, Math}
+import uk.ac.ed.inf.mois.{Model, Process, ProcessGroup, VarCalc, Math}
+import uk.ac.ed.inf.mois.ode.{ODE, Apache}
 import uk.ac.ed.inf.mois.sched.NaiveScheduler
 import scala.math
 import spire.implicits._
 import uk.ac.ed.inf.mois.implicits._
 
 
-class Photoperiodism extends ODE with VarCalc{
+class Photoperiodism extends ODE[Double, Double] with Apache with VarCalc{
 
   val t = Double("sim:t")
   t annotate("description", "Simulation time")

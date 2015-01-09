@@ -18,7 +18,7 @@
 
 package uk.ac.ed.inf.mois.millar
 
-import uk.ac.ed.inf.mois.{Model, ODE, Process, ProcessGroup, VarCalc, Math}
+import uk.ac.ed.inf.mois.{Model, Process, ProcessGroup, VarCalc, Math}
 import uk.ac.ed.inf.mois.sched.NaiveScheduler
 import spire.implicits._
 import uk.ac.ed.inf.mois.implicits._

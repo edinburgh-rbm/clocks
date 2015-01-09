@@ -18,13 +18,14 @@
 
 package uk.ac.ed.inf.mois.forgerpeskin
 
-import uk.ac.ed.inf.mois.{Model, ODE, Process, ProcessGroup, VarCalc, Math}
+import uk.ac.ed.inf.mois.{Model, Process, ProcessGroup, VarCalc, Math}
+import uk.ac.ed.inf.mois.ode.{ODE, Apache}
 import uk.ac.ed.inf.mois.sched.NaiveScheduler
 import spire.implicits._
 import uk.ac.ed.inf.mois.implicits._
 
 
-class MCCSecondary extends ODE with VarCalc {
+class MCCSecondary extends ODE[Double, Double] with Apache with VarCalc {
 
   /* Global variables */
 

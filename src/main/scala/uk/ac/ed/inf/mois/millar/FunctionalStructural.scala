@@ -115,29 +115,6 @@ class FunctionalStructural extends Process with VarCalc{
 
   val NumberOfLeaves = Int("c:NumberOfLeaves") default(0)
 
-  /* Initialise cotelydons if j=0, else spawn new leaf if appropriate stage in growth */
-  if (Total_Cd < LateVegetativeStageSwitchThreshold) {
-    calc(j_prov) := Math.floor(Total_Cd / EarlyVegetativeStageGrowth).toInt
-    if (j == 0) {
-      Leaves.append(new Leaf(1))
-      Leaves.append(new Leaf(2))
-      j := 1
-      NumberOfLeaves := 2
-    } else if (j_prov == j + 1) {
-      Leaves.append(new Leaf(NumberOfLeaves + 1))
-      j := j_prov
-      NumberOfLeaves := j + 1
-    }
-  } else {
-    calc(j_prov) := Math.floor(LateVegetativeStageSwitchThreshold / EarlyVegetativeStageGrowth).toInt + Math.floor((Total_Cd - LateVegetativeStageSwitchThreshold) / LateVegetativeStageGrowth).toInt
-    if (j_prov == j + 1) {
-      Leaves.append(new Leaf(NumberOfLeaves + 1))
-      j := j_prov
-      NumberOfLeaves := j + 1
-    }
-  }
-
-
   val T_r = Double("c:T_r") default(963.495) param()
   T_r annotate("description", "Duration of root expansion")
   T_r annotate("units", "Cd")
@@ -182,13 +159,7 @@ class FunctionalStructural extends Process with VarCalc{
   val sumd_l = Double("c:sumd_l")
   sumd_l annotate("description", "Total leaf demand")
 
-  /* For each Leaf in Leaves calculate its demand and add to sumd_l */
-  for (Leaf <- Leaves) {
-    calc(f_l) := (1 / M_l) * (((Leaf.n + 0.5) / T_l) ** (1 / a_l)) * ((1 - ((Leaf.n + 0.5) / T_l)) ** (1 / b_l))
-    calc(d_l) := P_l * f_l
-    Leaf.d = d_l
-    calc(sumd_l) := sumd_l + d_l
-  }
+
 
   val RS = Double("c:RS") default(0.12)
   RS annotate("description", "Root-to-shoot allocation ratio")
@@ -211,57 +182,87 @@ class FunctionalStructural extends Process with VarCalc{
   val i_max = Double("c:imax") default(1) param()
   i_max annotate("description", "Largest leaf")
 
-  /* Update leaf size based on trophic competition */
-  for (Leaf <- Leaves) {
-    /* Does 'total increment in shoot dry mass' = LeafGrowth? */
-    calc(delta_q) := (Leaf.d / sumd_l) * LG
-    Leaf.add_age(Thermaltime)
-    Leaf.add_weight(delta_q)
-
-    calc(SLA) := 0.144 * Math.exp(-0.002 * Total_Cd)
-    /* Leaf area does not shrink in later time points. */
-    if (Leaf.area < SLA) {
-      Leaf.area = SLA
-    }
-
-    /* Find largest leaf */
-    if (Leaf.weight > weight_max) {
-      weight_max := Leaf.weight
-      i_max := Leaf.rln
-    }
-
-  }
-
-  /* Update leaf zenithal angle */
-  for (Leaf <- Leaves) {
-    if (Leaf.rln <= i_max) {
-      Leaf.a = 10
-    } else {
-      Leaf.a = 10 + (60 * (Leaf.rln - i_max) / (NumberOfLeaves - i_max))
-    }
-  }
-
-
   /* Calculate 13 largest functional leaves for RosetteArea. */
-
   val x = Double("temp:x") default(0)
 
-  calc(RosetteArea) := 0
-  for (Leaf <- Leaves) {
-    calc(x) := 0
-    for (k <- 0 to 12) {
-      calc(x) := x + (Leaf.area * Math.cos(Leaf.a))
+  override def step(t: Double, tau: Double) {
+    /* Initialise cotelydons if j=0, else spawn new leaf if appropriate stage in growth */
+    if (Total_Cd < LateVegetativeStageSwitchThreshold) {
+      j_prov := Math.floor(Total_Cd / EarlyVegetativeStageGrowth).toInt
+      if (j == 0) {
+        Leaves.append(new Leaf(1))
+        Leaves.append(new Leaf(2))
+        j := 1
+        NumberOfLeaves := 2
+      } else if (j_prov == j + 1) {
+        Leaves.append(new Leaf(NumberOfLeaves + 1))
+        j := j_prov
+        NumberOfLeaves := j + 1
+      }
+    } else {
+      j_prov := Math.floor(LateVegetativeStageSwitchThreshold / EarlyVegetativeStageGrowth).toInt + Math.floor((Total_Cd - LateVegetativeStageSwitchThreshold) / LateVegetativeStageGrowth).toInt
+      if (j_prov == j + 1) {
+        Leaves.append(new Leaf(NumberOfLeaves + 1))
+        j := j_prov
+        NumberOfLeaves := j + 1
+      }
     }
-    if (x > RosetteArea) {
-      calc(RosetteArea) := x
+
+    /* For each Leaf in Leaves calculate its demand and add to sumd_l */
+    for (Leaf <- Leaves) {
+      f_l := (1 / M_l) * (((Leaf.n + 0.5) / T_l) ** (1 / a_l)) * ((1 - ((Leaf.n + 0.5) / T_l)) ** (1 / b_l))
+      d_l := P_l * f_l
+      Leaf.d = d_l
+      sumd_l := sumd_l + d_l
     }
+
+    /* Update leaf size based on trophic competition */
+    for (Leaf <- Leaves) {
+      /* Does 'total increment in shoot dry mass' = LeafGrowth? */
+      delta_q := (Leaf.d / sumd_l) * LG
+      Leaf.add_age(Thermaltime)
+      Leaf.add_weight(delta_q)
+
+      SLA := 0.144 * Math.exp(-0.002 * Total_Cd)
+      /* Leaf area does not shrink in later time points. */
+      if (Leaf.area < SLA) {
+        Leaf.area = SLA
+      }
+
+      /* Find largest leaf */
+      if (Leaf.weight > weight_max) {
+        weight_max := Leaf.weight
+        i_max := Leaf.rln
+      }
+    }
+
+    /* Update leaf zenithal angle */
+    for (Leaf <- Leaves) {
+      if (Leaf.rln <= i_max) {
+        Leaf.a = 10
+      } else {
+        Leaf.a = 10 + (60 * (Leaf.rln - i_max) / (NumberOfLeaves - i_max))
+      }
+    }
+
+
+    RosetteArea := 0
+    for (Leaf <- Leaves) {
+      x := 0
+      for (k <- 0 to 12) {
+        x := x + (Leaf.area * Math.cos(Leaf.a))
+      }
+      if (x > RosetteArea) {
+        RosetteArea := x
+      }
+    }
+
+    /*  (0 until (NumberOfLeaves-12)).map { k =>
+     *    (0 until 12).map { leaf =>
+     *      (leaf.area * Math.cos(leaf.a))
+     *    }.sum
+     *  }.max
+     */
+    super.step(t, tau)
   }
-
-  /*  (0 until (NumberOfLeaves-12)).map { k =>
-   *    (0 until 12).map { leaf =>
-   *      (leaf.area * Math.cos(leaf.a))
-   *    }.sum
-   *  }.max
-   */
-
 }

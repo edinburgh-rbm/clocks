@@ -349,12 +349,15 @@ class Photoperiodism extends ODE[Double, Double] with Apache with VarCalc{
    * ... ouch.
    */
   val FTs = new CircularBuffer[Double](24)
-  FTs.push(FT)
 
   val FTarea = Double("c:FTarea")
   FTarea annotate("description", "Total amount of FT accumulated over previous 24 hours")
-  FTarea := FTs.sumAll
 
+  override def init(t0: Double) {
+    super.init(t0)
+    FTs.push(FT)
+    FTarea := FTs.sumAll
+  }
 }
 
 class CircularBuffer[T](size: Int)(implicit mf: Manifest[T], num: Numeric[T]) {

@@ -103,19 +103,11 @@ class Photothermal extends Process with VarCalc {
   P_night annotate("description", "Gating function to account for sensitivity to night temperature")
 
   val P_t = Double("c:P_t")
-  if (h < 12) {
-    calc(P_t) := P_day
-  } else {
-    calc(P_t) := P_night
-  }
+  
+  calc(P_t) := { if (h < 12) P_day else P_night }
 
   val Thermal = Double("c:Thermal")
-  if (Temperature >= T_b) {
-    calc(Thermal) := P_t * (Temperature - T_b)
-  } else {
-    Thermal := 0
-  }
-
+  calc(Thermal) := { if (Temperature >= T_b) P_t * (Temperature - T_b) else 0 }
 
   /* Vernalisation */
 
@@ -147,12 +139,12 @@ class Photothermal extends Process with VarCalc {
   F_b annotate("description", "Baseline FLC repression")
 
   val Vernalisation = Double("c:Vernalisation")
-  if (V_h < V_sat) {
-    calc(Vernalisation) := F_b + ((V_h * (1 - F_b)) / V_sat)
-  } else {
-    Vernalisation := 1
+  calc(Vernalisation) := {
+    if (V_h < V_sat)
+      F_b + ((V_h * (1 - F_b)) / V_sat)
+    else
+      Vernalisation := 1
   }
-
 
   val MPTU = Double("c:MPTU")
   calc(MPTU) := Photoperiod * Thermal * Vernalisation

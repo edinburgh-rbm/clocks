@@ -197,14 +197,16 @@ class CarbonDynamic extends Process with VarCalc{
 
   val J = Double("c:J")
   J annotate("description", "Rate of electron transport")
-  if (J_discriminant >= 0) {
-    if (J_1 >= J_2) {
-      J := J_1
+  calc(J) := {
+    if (J_discriminant >= 0) {
+      if (J_1 >= J_2) {
+        J_1
+      } else {
+        J_2
+      }
     } else {
-      J := J_2
+      0
     }
-  } else {
-    J := 0
   }
 
   val A_j = Double("c:A_j")
@@ -213,10 +215,12 @@ class CarbonDynamic extends Process with VarCalc{
 
 
   val A_net = Double("c:A_net")
-  if (J == 0) {
-    A_net := A_c
-  } else {
-    A_net := Math.min(A_c, A_j)
+  calc(A_net) := {
+    if (J == 0) {
+      A_c
+    } else {
+      Math.min(A_c, A_j)
+    }
   }
 
   val CarbonAssimilation = Double("c:CarbonAssimilation")
@@ -243,19 +247,6 @@ class CarbonDynamic extends Process with VarCalc{
   val StarchDegradation = Double("c:StarchDegradation") default(0)
   val StarchCarbonEOD = Double("c:StarchCarbonEOD") default(0)
   val St = Double("c:St") default(0)
-
-  if (h < 12) {
-    calc(StarchSynthesis) := ST_br * CarbonAssimilation
-    calc(PartitionToSugar) := CarbonAssimilation - StarchSynthesis
-    St := PartitionToSugar
-  } else {
-    if (h == 12) {
-      StarchCarbonEOD := StarchCarbon
-    }
-    calc(StarchDegradation) := (ST_c * StarchCarbonEOD) / 12
-    St := StarchDegradation
-  }
-
 
   val p8 = Double("c:p8") default(0.085) param()
   p8 annotate("description", "Leaf respiration per unit sucrose")
@@ -306,13 +297,6 @@ class CarbonDynamic extends Process with VarCalc{
 
   val TransR = Double("c:TransR") default(0)
   TransR annotate("description", "Translocation from root carbon")
-
-  if (C_avail >= 0) {
-    Q_C := C_avail
-  } else {
-    calc(TransL) := - C_avail * (LeafCarbon / (LeafCarbon + RootCarbon))
-    calc(TransR) := - C_avail * (RootCarbon / (LeafCarbon + RootCarbon))
-  }
 
 
   val GR_max = Double("c:GR_max") default(0.408) param()
@@ -369,32 +353,52 @@ class CarbonDynamic extends Process with VarCalc{
   val R_mr = Double("c:R_mr")
   R_mr annotate("description", "Root growth respiration")
 
-  if (D_C <= Q_C) {
-    LG := d_L
-    R_ml := d_RL
-    RG := d_R
-    R_mr := d_RR
-  } else {
-    LG := (d_L / D_C) * Q_C
-    R_ml := (d_RL / D_C) * Q_C
-    RG := (d_R / D_C) * Q_C
-    R_mr := (d_RR / D_C) * Q_C
-  }
-
-
   val O_sta = Double("c:O_sta") default(0)
   O_sta annotate("description", "Overflow transferring excess carbon to starch pool")
 
-  if (h < 12) {
-    calc(O_sta) := Q_C - D_C
-  } else {
-    O_sta := 0
+  calc(O_sta) := {
+    if (h < 12) {
+      Q_C - D_C
+    } else {
+      0
+    }
   }
 
+  override def step(t: Double, tau: Double) {
+    if (h < 12) {
+      StarchSynthesis := ST_br * CarbonAssimilation
+      PartitionToSugar := CarbonAssimilation - StarchSynthesis
+      St := PartitionToSugar
+    } else {
+      if (h == 12) {
+        StarchCarbonEOD := StarchCarbon
+      }
+      StarchDegradation := (ST_c * StarchCarbonEOD) / 12
+      St := StarchDegradation
+    }
+    LeafCarbon := LeafCarbon + LG - TransL
+    RootCarbon := RootCarbon + RG - TransR
+    StarchCarbon := StarchCarbon + StarchSynthesis - StarchDegradation + O_sta
+    SugarCarbon := SugarCarbon + St - R_above - R_below - R_ml - R_mr - O_sta - LG - RG + TransL + TransR
 
-  LeafCarbon := LeafCarbon + LG - TransL
-  RootCarbon := RootCarbon + RG - TransR
-  StarchCarbon := StarchCarbon + StarchSynthesis - StarchDegradation + O_sta
-  SugarCarbon := SugarCarbon + St - R_above - R_below - R_ml - R_mr - O_sta - LG - RG + TransL + TransR
+    if (C_avail >= 0) {
+      Q_C := C_avail
+    } else {
+      TransL := - C_avail * (LeafCarbon / (LeafCarbon + RootCarbon))
+      TransR := - C_avail * (RootCarbon / (LeafCarbon + RootCarbon))
+    }
 
+    if (D_C <= Q_C) {
+      LG := d_L
+      R_ml := d_RL
+      RG := d_R
+      R_mr := d_RR
+    } else {
+      LG := (d_L / D_C) * Q_C
+      R_ml := (d_RL / D_C) * Q_C
+      RG := (d_R / D_C) * Q_C
+      R_mr := (d_RR / D_C) * Q_C
+    }
+    super.step(t, tau)
+  }
 }

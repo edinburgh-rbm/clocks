@@ -627,7 +627,7 @@ class MCCPrimaryDPN extends DeterministicReactionNetwork[Double, Double] with Ap
     PtpC --> PtppC at htt,
     PopCRo --> PoppCRo at hto,
     PtpCRo --> PtppCRo at htt,
-    PopCRt --> PoppCRt at hto,
+    PopCRt --> PoppCRt at hot,
     PtpCRt --> PtppCRt at htt,
     PonpCn --> PonppCn at hto,
     PtnpCn --> PtnppCn at htt,

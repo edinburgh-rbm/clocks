@@ -32,7 +32,7 @@ class Photoperiodism extends ODE[Double, Double] with Apache with VarCalc{
   t annotate("description", "Simulation time")
   t annotate("units", "hour")
 
-  val h = Double("sim:h")
+  val h = Double("ex:h")
   h annotate("description", "Simulation 24-hour")
   h annotate("units", "hour")
 
@@ -296,58 +296,54 @@ class Photoperiodism extends ODE[Double, Double] with Apache with VarCalc{
   k_FT annotate("description", "Michaelis constant of FT mRNA degradation")
   k_FT annotate("units", "nM")
 
-  val B_CO = Double("c:B_CO") default(0) param()
+  val B_CO = Double("c:B_CO") default(1) param()
   B_CO annotate("description", "Basal rate of FT transcription")
   B_CO annotate("units", "nM/h")
 
 
-  val P = Double("c:P")
-  val LHY = Double("c:LHY")
-  val LHY_c = Double("c:LHY_c")
-  val LHY_n = Double("c:LHY_n")
-  val TOC1 = Double("c:TOC1")
-  val TOC1_c = Double("c:TOC1_c")
-  val TOC1_n = Double("c:TOC1_n")
-  val X = Double("c:X")
-  val X_c = Double("c:X_c")
-  val X_n = Double("c:X_n")
-  val Y = Double("c:Y")
-  val Y_c = Double("c:Y_c")
-  val Y_n = Double("c:Y_n")
-  val CO = Double("c:CO")
-  val FT = Double("c:FT")
+  val P = Double("c:P") default(0) nonnegative()
+  val LHY = Double("c:LHY") default(0) nonnegative()
+  val LHY_c = Double("c:LHY_c") default(0) nonnegative()
+  val LHY_n = Double("c:LHY_n") default(0) nonnegative()
+  val TOC1_mrna = Double("c:TOC1_mrna") default(0) nonnegative()
+  val TOC1_c = Double("c:TOC1_c") default(0) nonnegative()
+  val TOC1_n = Double("c:TOC1_n") default(0) nonnegative()
+  val X_mrna = Double("c:X_mrna") default(0) nonnegative()
+  val X_c = Double("c:X_c") default(0) nonnegative()
+  val X_n = Double("c:X_n") default(0) nonnegative()
+  val Y_mrna = Double("c:Y_mrna") default(0) nonnegative()
+  val Y_c = Double("c:Y_c") default(0) nonnegative()
+  val Y_n = Double("c:Y_n") default(0) nonnegative()
+  val CO = Double("c:CO") default(0) nonnegative()
+  val FT = Double("c:FT") default(0) nonnegative()
 
   /* Assume 12-hour photoperiod, with sunrise at h=0 and sunset at h=12. */
   val Theta_light = Double("c:Theta_light")
-  calc(Theta_light) := (1/4) * (1 + Math.tanh(6 * (h - 0))) * (1 - Math.tanh(6 * (h - DaylightHours)))
-  
+  calc(Theta_light) := 0.25 * (1 + Math.tanh(6 * (h - 0))) * (1 - Math.tanh(6 * (h - DaylightHours)))
 
-  d(P) := (0.5 * (1 - Theta_light)) - (P * Theta_light) - ((1.2 * P) / (1.2 + P))
+  d(P) := (0.5 * (1.0 - Theta_light)) - (P * Theta_light) - ((1.2 * P) / (1.2 + P))
 
   d(LHY) := (Theta_light * v1 * P) + ((v2 * (Math.pow(X_c, u1))) / (v3 + (Math.pow(X_c, u1)))) - ((v4 * LHY) / (v5 + LHY))
   d(LHY_c) := (v6 * LHY) - (v7 * LHY_c) + (v8 * LHY_n) - ((v9 * LHY_c) / (v10 + LHY_c))
   d(LHY_n) := (v7 * LHY_c) - (v8 * LHY_n) - ((v11 * LHY_n) / (v12 + LHY_n))
 
-  d(TOC1) := (((v13 * (Math.pow(Y_n, u2))) / (v14 + (Math.pow(Y_n, u2)))) * (v15 / (v16 + (Math.pow(Y_n, u2))))) - ((v17 * TOC1) / (v18 + TOC1))
-  d(TOC1_c) := (v19 * TOC1) - (v20 * TOC1_c) + (v21 * TOC1_n) - ((((v22 * (1 - Theta_light)) + v23) * TOC1_c) / (v24 + TOC1_c))
-  d(TOC1_n) := (v20 * TOC1_c) - (v21 * TOC1_n) - ((((v25 * (1 - Theta_light)) + v26) * TOC1_n) / (v27 + TOC1_n))
+  d(TOC1_mrna) := (((v13 * (Math.pow(Y_n, u2))) / (v14 + (Math.pow(Y_n, u2)))) * (v15 / (v16 + (Math.pow(Y_n, u2))))) - ((v17 * TOC1_mrna) / (v18 + TOC1_mrna))
+  d(TOC1_c) := (v19 * TOC1_mrna) - (v20 * TOC1_c) + (v21 * TOC1_n) - ((((v22 * (1.0 - Theta_light)) + v23) * TOC1_c) / (v24 + TOC1_c))
+  d(TOC1_n) := (v20 * TOC1_c) - (v21 * TOC1_n) - ((((v25 * (1.0 - Theta_light)) + v26) * TOC1_n) / (v27 + TOC1_n))
 
-  d(X) := ((v28 * (Math.pow(TOC1_n, u3))) / (v29 + (Math.pow(TOC1_n, u3)))) - ((v30 * X) / (v31 + X))
-  d(X_c) := (v32 * X) - (v33 * X_c) + (v34 * X_n) - ((v35 * X_c) / (v36 + X_c))
+  d(X_mrna) := ((v28 * (Math.pow(TOC1_n, u3))) / (v29 + (Math.pow(TOC1_n, u3)))) - ((v30 * X_mrna) / (v31 + X_mrna))
+  d(X_c) := (v32 * X_mrna) - (v33 * X_c) + (v34 * X_n) - ((v35 * X_c) / (v36 + X_c))
   d(X_n) := (v33 * X_c) - (v34 * X_n) - ((v37 * X_n) / (v38 +  X_n))
 
-  d(Y) := ((Theta_light * v53 * P + (((Theta_light * v39) + v40) / (v41 + (Math.pow(TOC1_n, u4))))) * (v51 / (Math.pow(LHY_n, u5) + v52))) - ((v42 * Y) / (v43 + Y))
-  d(Y_c) := (v44 * Y) - (v45 * Y_c) + (v46 * Y_n) - ((v47 * Y_c) / (v48 + Y_c))
+  d(Y_mrna) := ((Theta_light * v53 * P + (((Theta_light * v39) + v40) / (v41 + (Math.pow(TOC1_n, u4))))) * (v51 / (Math.pow(LHY_n, u5) + v52))) - ((v42 * Y_mrna) / (v43 + Y_mrna))
+  d(Y_c) := (v44 * Y_mrna) - (v45 * Y_c) + (v46 * Y_n) - ((v47 * Y_c) / (v48 + Y_c))
   d(Y_n) := (v45 * Y_c) - (v45 * Y_n) - ((v49 * Y_n) / (v50 + Y_n))
 
-  d(CO) := (v_COm * TOC1_n) - (((1 - Theta_light) * v_COp * CO) / (k_COp + CO))
+  d(CO) := (v_COm * TOC1_n) - (((1.0 - Theta_light) * v_COp * CO) / (k_COp + CO))
   d(FT) := B_CO + ((V_CO * CO) / (K_CO + CO)) - ((v_FT * FT) / (k_FT + FT))
 
 
-  /* This value needs to keep track of the total amount of FT accumulated over the previous 24 hours from the hour at hand.
-   * But we don't know the timestep at which this module will operate, and hence how many FT values we'll have to track!!!
-   * ... ouch.
-   */
+  /* This value needs to keep track of the total amount of FT accumulated over the previous 24 hours from the hour at hand. */
   val FTs = new CircularBuffer[Double](24)
 
   val FTarea = Double("c:FTarea")
@@ -358,6 +354,17 @@ class Photoperiodism extends ODE[Double, Double] with Apache with VarCalc{
     FTs.push(FT)
     FTarea := FTs.sumAll
   }
+
+  val PreviousH = Double("c:PreviousHPP") default(0) param()
+  override def step(t: Double, tau: Double) {
+    super.step(t, tau)
+    if (PreviousH.value != h.value) {
+      FTs.push(FT)
+      FTarea := FTs.sumAll
+    }
+    PreviousH := h
+  }
+
 }
 
 class CircularBuffer[T](size: Int)(implicit mf: Manifest[T], num: Numeric[T]) {

@@ -32,7 +32,7 @@ class FunctionalStructural extends Process with VarCalc{
   t annotate("description", "Simulation time")
   t annotate("units", "hour")
 
-  val h = Double("sim:h")
+  val h = Double("ex:h")
   h annotate("description", "Simulation 24-hour")
   h annotate("units", "hour")
 
@@ -105,7 +105,6 @@ class FunctionalStructural extends Process with VarCalc{
   val Total_Cd = Double("c:Total_Cd") default(0)
   Total_Cd annotate("description", "Accumulated degree days")
   Total_Cd annotate("units", "Cd")
-  calc(Total_Cd) := Total_Cd + Thermaltime
 
 
   val j = Int("c:j") default(0)
@@ -125,16 +124,14 @@ class FunctionalStructural extends Process with VarCalc{
   val a_r = Double("c:a_r") default(13.03) param()
   val b_r = Double("c:b_r") default(9.58) param()
 
-  val M_r = Double("c:M_r") default(0.195691) param()
+  /* Needs to be normalised to its maximal value M_r. For now we just calculate this manually. */
+  val M_r = Double("c:M_r") default(0.000000834) param()
 
-  /* Needs to be normalised to its maximal value M_r */
-  val f_r = Double("c:f_r") param()
+  val f_r = Double("c:f_r") param() nonnegative()
   f_r annotate("description", "Root sink variation")
-  calc(f_r) := (1 / M_r) * (((Total_Cd + 0.5) / T_r) ** (1 / a_r)) * ((1 - ((Total_Cd + 0.5) / T_r)) ** (1 / b_r))
 
   val d_r = Double("c:d_r")
   d_r annotate("description", "Root demand")
-  calc(d_r) := P_r * f_r
 
 
   /* Technically this should be 300 for cotelydons (first two leaves) and 400 for rest, but hey. */
@@ -147,10 +144,10 @@ class FunctionalStructural extends Process with VarCalc{
 
   val a_l = Double("c:a_l") default(3.07) param()
   val b_l = Double("c:b_l") default(5.59) param()
-  val M_l = Double("c:M_l") default(0.406873) param()
+  /* Needs to be normalised to its maximal value M_l. Again, for now we calculate this manually. */
+  val M_l = Double("c:M_l") default(0.016) param()
 
-  /* Needs to be normalised to its maximal value M */
-  val f_l = Double("c:f_r") param()
+  val f_l = Double("c:f_r") param() nonnegative()
   f_l annotate("description", "Leaf sink variation")
 
   val d_l = Double("c:d_l") param()
@@ -160,10 +157,8 @@ class FunctionalStructural extends Process with VarCalc{
   sumd_l annotate("description", "Total leaf demand")
 
 
-
-  val RS = Double("c:RS") default(0.12)
+  val RS = Double("c:RS") default(0.12) nonnegative()
   RS annotate("description", "Root-to-shoot allocation ratio")
-  calc(RS) := (d_r / sumd_l) * (RootCarbon / LeafCarbon)
 
 
   val delta_q = Double("c:delta_q") param()
@@ -185,84 +180,104 @@ class FunctionalStructural extends Process with VarCalc{
   /* Calculate 13 largest functional leaves for RosetteArea. */
   val x = Double("temp:x") default(0)
 
+
+  val PreviousH = Double("c:PreviousHFS") default(0) param()
   override def step(t: Double, tau: Double) {
-    /* Initialise cotelydons if j=0, else spawn new leaf if appropriate stage in growth */
-    if (Total_Cd < LateVegetativeStageSwitchThreshold) {
-      j_prov := Math.floor(Total_Cd / EarlyVegetativeStageGrowth).toInt
-      if (j == 0) {
-        Leaves.append(new Leaf(1))
-        Leaves.append(new Leaf(2))
-        j := 1
-        NumberOfLeaves := 2
-      } else if (j_prov == j + 1) {
-        Leaves.append(new Leaf(NumberOfLeaves + 1))
-        j := j_prov
-        NumberOfLeaves := j + 1
-      }
-    } else {
-      j_prov := Math.floor(LateVegetativeStageSwitchThreshold / EarlyVegetativeStageGrowth).toInt + Math.floor((Total_Cd - LateVegetativeStageSwitchThreshold) / LateVegetativeStageGrowth).toInt
-      if (j_prov == j + 1) {
-        Leaves.append(new Leaf(NumberOfLeaves + 1))
-        j := j_prov
-        NumberOfLeaves := j + 1
-      }
-    }
 
-    /* For each Leaf in Leaves calculate its demand and add to sumd_l */
-    for (Leaf <- Leaves) {
-      f_l := (1 / M_l) * (((Leaf.n + 0.5) / T_l) ** (1 / a_l)) * ((1 - ((Leaf.n + 0.5) / T_l)) ** (1 / b_l))
-      d_l := P_l * f_l
-      Leaf.d = d_l
-      sumd_l := sumd_l + d_l
-    }
+    if (PreviousH.value != h.value) {
 
-    /* Update leaf size based on trophic competition */
-    for (Leaf <- Leaves) {
-      /* Does 'total increment in shoot dry mass' = LeafGrowth? */
-      delta_q := (Leaf.d / sumd_l) * LG
-      Leaf.add_age(Thermaltime)
-      Leaf.add_weight(delta_q)
+      /* Advance TotalThermalTime */
+      Total_Cd := Total_Cd + Thermaltime
 
-      SLA := 0.144 * Math.exp(-0.002 * Total_Cd)
-      /* Leaf area does not shrink in later time points. */
-      if (Leaf.area < SLA) {
-        Leaf.area = SLA
-      }
-
-      /* Find largest leaf */
-      if (Leaf.weight > weight_max) {
-        weight_max := Leaf.weight
-        i_max := Leaf.rln
-      }
-    }
-
-    /* Update leaf zenithal angle */
-    for (Leaf <- Leaves) {
-      if (Leaf.rln <= i_max) {
-        Leaf.a = 10
+      /* Initialise cotelydons if j=0, else spawn new leaf if appropriate stage in growth */
+      if (Total_Cd.value < LateVegetativeStageSwitchThreshold.value) {
+        j_prov := Math.floor(Total_Cd / EarlyVegetativeStageGrowth).toInt
+        if (j.value == 0) {
+          Leaves.append(new Leaf(0))
+          Leaves.append(new Leaf(1))
+          j := 1
+          NumberOfLeaves := 2
+        } else if (j_prov.value == j.value + 1) {
+          Leaves.append(new Leaf(NumberOfLeaves))
+          j := j_prov
+          NumberOfLeaves := j + 1
+        }
       } else {
-        Leaf.a = 10 + (60 * (Leaf.rln - i_max) / (NumberOfLeaves - i_max))
+        j_prov := Math.floor(LateVegetativeStageSwitchThreshold / EarlyVegetativeStageGrowth).toInt + Math.floor((Total_Cd - LateVegetativeStageSwitchThreshold) / LateVegetativeStageGrowth).toInt
+        if (j_prov.value == j + 1) {
+          Leaves.append(new Leaf(NumberOfLeaves))
+          j := j_prov
+          NumberOfLeaves := j + 1
+        }
       }
-    }
+
+      /* Calculate root demand */
+      f_r := (1 / M_r) * (((Total_Cd + 0.5) / T_r) ** (a_r - 1)) * ((1 - ((Total_Cd + 0.5) / T_r)) ** (b_r - 1))
+      d_r := P_r * f_r
+
+      /* For each Leaf in Leaves calculate its demand and add to sumd_l */
+      sumd_l := 0
+      for (Leaf <- Leaves) {
+        f_l := (1 / M_l) * (((Leaf.n + 0.5) / T_l) ** (a_l - 1)) * ((1 - ((Leaf.n + 0.5) / T_l)) ** (b_l - 1))
+        d_l := P_l * f_l
+        Leaf.d = d_l
+        sumd_l := sumd_l + d_l
+      }
+
+      RS := (d_r / sumd_l) * (RootCarbon / LeafCarbon)
+
+      /* Update leaf size based on trophic competition */
+      for (Leaf <- Leaves) {
+        /* Does 'total increment in shoot dry mass' = LeafGrowth? */
+        delta_q := (Leaf.d / (sumd_l + d_r)) * LG
+        Leaf.add_age(Thermaltime)
+        Leaf.add_weight(delta_q)
+
+        SLA := 0.144 * Math.exp(-0.002 * Total_Cd)
+        /* Leaf area does not shrink in later time points. */
+        if (Leaf.area < SLA) {
+          Leaf.area = SLA
+        }
+
+        /* Find largest leaf */
+        if (Leaf.weight > weight_max) {
+          weight_max := Leaf.weight
+          i_max := Leaf.rln
+        }
+      }
+
+      /* Update leaf zenithal angle */
+      for (Leaf <- Leaves) {
+        if (Leaf.rln <= i_max) {
+          Leaf.a = 10
+        } else {
+          Leaf.a = 10 + (60 * (Leaf.rln - i_max) / (NumberOfLeaves - i_max))
+        }
+      }
 
 
-    RosetteArea := 0
-    for (Leaf <- Leaves) {
-      x := 0
-      for (k <- 0 to 12) {
-        x := x + (Leaf.area * Math.cos(Leaf.a))
-      }
-      if (x > RosetteArea) {
+      RosetteArea := 0
+      if (NumberOfLeaves <= 14) {
+        x := 0
+        for (Leaf <- Leaves) {
+	  x := x + (Leaf.area * Math.cos(Leaf.a.toRadians))
+        }
         RosetteArea := x
+      } else {
+        for (i <- 0 to NumberOfLeaves-13) {
+          x := 0
+          for (k <- i to i+12) {
+            x := x + (Leaves(k).area * Math.cos(Leaves(k).a.toRadians))
+          }
+          if (x > RosetteArea) {
+            RosetteArea := x
+          }
+        }
       }
-    }
 
-    /*  (0 until (NumberOfLeaves-12)).map { k =>
-     *    (0 until 12).map { leaf =>
-     *      (leaf.area * Math.cos(leaf.a))
-     *    }.sum
-     *  }.max
-     */
+    }
+    PreviousH := h
+
     super.step(t, tau)
   }
 }

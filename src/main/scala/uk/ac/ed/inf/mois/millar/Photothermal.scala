@@ -32,7 +32,7 @@ class Photothermal extends Process with VarCalc {
   t annotate("description", "Simulation time")
   t annotate("units", "hour")
 
-  val h = Double("sim:h")
+  val h = Double("ex:h")
   h annotate("description", "Simulation 24-hour")
   h annotate("units", "hour")
 
@@ -91,7 +91,6 @@ class Photothermal extends Process with VarCalc {
   val n = Double("c:n") default(7) param()
 
   val Photoperiod = Double("c:Photoperiod")
-  calc(Photoperiod) := A + (B * ((Math.pow(C, n)) / ((Math.pow(C, n)) + (Math.pow(FTarea, n)))))
 
 
   /* Thermal */
@@ -103,11 +102,9 @@ class Photothermal extends Process with VarCalc {
   P_night annotate("description", "Gating function to account for sensitivity to night temperature")
 
   val P_t = Double("c:P_t")
-  
-  calc(P_t) := { if (h < 12) P_day else P_night }
 
   val Thermal = Double("c:Thermal")
-  calc(Thermal) := { if (Temperature >= T_b) P_t * (Temperature - T_b) else 0 }
+
 
   /* Vernalisation */
 
@@ -123,14 +120,12 @@ class Photothermal extends Process with VarCalc {
   val Omega = Double("c:Omega") default(2.23) param()
   val Epsilon = Double("c:Epsilon") default(1.00) param()
 
-  val V_e = Double("c:V_e")
+  val V_e = Double("c:V_e") nonnegative()
   V_e annotate("description", "Vernalisation effectiveness")
-  calc(V_e) := Math.exp(Kappa) * ((Temperature - T_Vmin) ** Omega) * ((T_Vmax - Temperature) ** Epsilon)
 
   /* Need to verify this */
   val V_h = Double("c:V_h") default(0)
   V_h annotate("description", "Cumulative vernalisation hours")
-  calc(V_h) := V_h + V_e
 
   val V_sat = Double("c:V_sat") default(960) param()
   V_sat annotate("description", "Saturation point at which FLC is permanently inactivated")
@@ -139,21 +134,42 @@ class Photothermal extends Process with VarCalc {
   F_b annotate("description", "Baseline FLC repression")
 
   val Vernalisation = Double("c:Vernalisation")
-  calc(Vernalisation) := {
-    if (V_h < V_sat)
-      F_b + ((V_h * (1 - F_b)) / V_sat)
-    else
-      Vernalisation := 1
-  }
+
 
   val MPTU = Double("c:MPTU")
-  calc(MPTU) := Photoperiod * Thermal * Vernalisation
 
   val CumulativeMPTU = Double("c:CumulativeMPTU") default(0)
-  calc(CumulativeMPTU) := CumulativeMPTU + MPTU
 
   val ThresholdMPTU = Double("c:ThresholdMPTU") default(3212) param()
-
   /* If CumulativeMPTU > ThresholdMPTU then flowering */ 
+
+
+  val PreviousH = Double("c:PreviousHPT") default(0) param()
+  override def step(t: Double, tau: Double) {
+
+    if (PreviousH.value != h.value) {
+
+      Photoperiod := A + (B * ((Math.pow(C, n)) / ((Math.pow(C, n)) + (Math.pow(FTarea, n)))))
+
+
+      P_t := { if (h.value < 12) P_day else P_night }
+      Thermal := { if (Temperature.value >= T_b.value) P_t * (Temperature - T_b) else 0 }
+
+
+      V_e := Math.exp(Kappa) * ((Temperature - T_Vmin) ** Omega) * ((T_Vmax - Temperature) ** Epsilon)
+      V_h := V_h + V_e
+
+      if (V_h.value < V_sat.value) { Vernalisation:= F_b + ((V_h * (1 - F_b)) / V_sat) }
+      else {Vernalisation := 1}
+
+
+      MPTU := Photoperiod * Thermal * Vernalisation
+      CumulativeMPTU := CumulativeMPTU + MPTU
+
+    }
+    PreviousH := h
+
+    super.step(t, tau)
+  }
 
 }

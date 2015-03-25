@@ -234,10 +234,14 @@ class FunctionalStructural extends Process with VarCalc{
         Leaf.add_weight(delta_q)
 
         SLA := 0.144 * Math.exp(-0.002 * Total_Cd)
-        /* Leaf area does not shrink in later time points. */
-        if (Leaf.area < SLA) {
-          Leaf.area = SLA
+	var provArea = SLA * Leaf.weight
+        /* Leaf area does not shrink in later time points. Also cheating somewhat here!*/
+        if (Leaf.area < provArea) {
+          Leaf.area = provArea
         }
+	if (Leaf.weight == 0.0) {
+	  Leaf.area = SLA
+	}
 
         /* Find largest leaf */
         if (Leaf.weight > weight_max) {

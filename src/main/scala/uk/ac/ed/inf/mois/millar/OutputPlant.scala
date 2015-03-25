@@ -18,25 +18,32 @@
 
 package uk.ac.ed.inf.mois.millar
 
-import uk.ac.ed.inf.mois.{Model, Process, ProcessGroup, VarCalc, Math}
-import uk.ac.ed.inf.mois.sched.NaiveScheduler
-import uk.ac.ed.inf.mois.sched.CompositionScheduler
+import uk.ac.ed.inf.mois.{StepHandler, Process}
+import scala.collection.mutable
+import spire.algebra.Rig
 import spire.implicits._
 import uk.ac.ed.inf.mois.implicits._
 
 
-class MillarModel extends Model {
-
-  val process = new ProcessGroup {
-    scheduler = new CompositionScheduler(1.00)
+class OutputPlant() extends StepHandler {
+  val file = new java.io.File("plant.out")
+  val fp = new java.io.PrintWriter(file)
+  def init(t: Double, proc: Process) = {
+    fp.write("(Leaf number, physiological age, dry weight, zenithal angle, rosette area)")
   }
-  process += new InputTSV()
-  process += new Photoperiodism()
-  process += new Photothermal()
-  process += new CarbonDynamic()
-
-  var fspm = new FunctionalStructural()
-  fspm.addStepHandler(new OutputPlant())
-  process += fspm
-
+  def handleStep(t: Double, proc: Process) {
+    var Plant = proc.asInstanceOf[FunctionalStructural].Leaves
+    for (Leaf <- Plant) {
+      fp.write("(" + Leaf.rln + "," + Leaf.n + "," + Leaf.weight + "," + Leaf.a + "," + Leaf.area + ") ")
+    }
+    fp.write("\n")
+  }
+  override def reset(t: Double, proc: Process) {
+    fp.write("\n")
+    handleStep(t, proc)
+  }
+  override def finish = {
+    if (fp.isInstanceOf[java.io.Closeable])
+      fp.asInstanceOf[java.io.Closeable].close
+  }
 }
